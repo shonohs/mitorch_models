@@ -37,6 +37,27 @@ class TestForward(unittest.TestCase):
     def test_mobilenetv3small(self):
         self._test_model(MobileNetV3Small(), 224)
 
+    def test_squeezenet(self):
+        self._test_model(SqueezeNet(), 227)
+
+    def test_vgg_a(self):
+        self._test_model(VGG_A(), VGG_A.INPUT_SIZE)
+
+    def test_vgg_b(self):
+        self._test_model(VGG_B(), VGG_B.INPUT_SIZE)
+
+    def test_vgg_c(self):
+        self._test_model(VGG_C(), VGG_C.INPUT_SIZE)
+
+    def test_vgg_d(self):
+        self._test_model(VGG_D(), VGG_D.INPUT_SIZE)
+
+    def test_vgg_e(self):
+        self._test_model(VGG_E(), VGG_E.INPUT_SIZE)
+
+    def test_vgg16(self):
+        self._test_model(VGG16(), VGG16.INPUT_SIZE)
+
     def _test_model(self, model, input_size):
         model.eval()
         inputs = torch.tensor(np.random.rand(1, 3, input_size, input_size), dtype=torch.float32)
