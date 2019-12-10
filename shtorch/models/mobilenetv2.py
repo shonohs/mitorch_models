@@ -11,15 +11,18 @@ class MobileNetV2(Model):
             super(MobileNetV2.BasicBlock, self).__init__()
             intermediate_channels = in_channels * expansion_factor
             self.conv0 = Conv2dBNRelu(in_channels, intermediate_channels, kernel_size=1)
-            self.conv1 = Conv2dBNRelu(intermediate_channels, intermediate_channels, kernel_size=3, padding=1, stride=stride, groups=intermediate_channels)
+            self.conv1 = Conv2dBNRelu(intermediate_channels, intermediate_channels, kernel_size=3,
+                                      padding=1, stride=stride, groups=intermediate_channels)
             self.conv2 = Conv2dBN(intermediate_channels, out_channels, kernel_size=1)
-            self.residual = Add(stride == 1 and in_channels == out_channels)
+            self.residual = Add() if stride == 1 and in_channels == out_channels else None
 
         def forward(self, input):
             x = self.conv0(input)
             x = self.conv1(x)
             x = self.conv2(x)
-            return self.residual(x, input)
+            if self.residual:
+                x = self.residual(x, input)
+            return x
 
     def __init__(self, width_multiplier = 1, use_relu6 = True):
         super(MobileNetV2, self).__init__(output_dim = 1280, use_relu6 = True)
@@ -48,8 +51,6 @@ class MobileNetV2(Model):
             ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
             ('flatten', torch.nn.Flatten())
         ]))
-
-        self.post_init()
 
     def forward(self, input):
         return self.features(input)
