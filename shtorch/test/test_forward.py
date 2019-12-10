@@ -37,6 +37,12 @@ class TestForward(unittest.TestCase):
     def test_mobilenetv3small(self):
         self._test_model(MobileNetV3Small(), 224)
 
+    def test_shufflenet(self):
+        self._test_model(ShuffleNet(), 224)
+
+    def test_shufflenetv2(self):
+        self._test_model(ShuffleNetV2(), 224)
+
     def test_squeezenet(self):
         self._test_model(SqueezeNet(), 227)
 
