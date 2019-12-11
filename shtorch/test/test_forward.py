@@ -64,11 +64,24 @@ class TestForward(unittest.TestCase):
     def test_vgg16(self):
         self._test_model(VGG16(), VGG16.INPUT_SIZE)
 
+    # Object Detectors
+    def test_mobilenetv2_ssdlite(self):
+        self._test_object_detection_model(SSDLite(SSDLiteExtraLayers(MobileNetV2()), 1), 320)
+
     def _test_model(self, model, input_size):
         model.eval()
         inputs = torch.tensor(np.random.rand(1, 3, input_size, input_size), dtype=torch.float32)
         outputs = model(inputs)
         self.assertIsNotNone(outputs)
+
+    def _test_object_detection_model(self, model, input_size):
+        model.eval()
+        inputs = torch.tensor(np.random.rand(1, 3, input_size, input_size), dtype=torch.float32)
+        outputs = model(inputs)
+        self.assertIsNotNone(outputs)
+        predictions = model.predictor(outputs)
+        self.assertIsNotNone(predictions)
+        self.assertIsNotNone(model.loss)
 
 if __name__ == '__main__':
     unittest.main()

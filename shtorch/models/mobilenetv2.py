@@ -51,6 +51,3 @@ class MobileNetV2(Model):
             ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
             ('flatten', torch.nn.Flatten())
         ]))
-
-    def forward(self, input):
-        return self.features(input)
