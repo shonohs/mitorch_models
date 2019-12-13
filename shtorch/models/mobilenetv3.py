@@ -1,4 +1,4 @@
-"""MobileNetV3 model (https://arxiv.org/abs/1905.02244)"""
+"SSDL""MobileNetV3 model (https://arxiv.org/abs/1905.02244)"""
 import collections
 import torch
 from .model import Model
@@ -64,8 +64,6 @@ class MobileNetV3(MobileNetV3Base):
             ('flatten', torch.nn.Flatten())
         ]))
 
-    def forward(self, input):
-        return self.features(input)
 
 class MobileNetV3Small(MobileNetV3Base):
     def __init__(self, width_multiplier = 1, use_hswish = True):
@@ -76,22 +74,19 @@ class MobileNetV3Small(MobileNetV3Base):
 
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0', Conv2dBNRelu(3, int(16 * m), kernel_size=3, padding=1, stride=2, use_hswish=True)),
-            ('block0_0', basic_block(int(16 * m), int(16 * m), int(16 * m), use_se=False, use_hswish=False)),
+            ('block0_0', basic_block(int(16 * m), int(16 * m), int(16 * m), use_hswish=False, stride=2)),
             ('block1_0', basic_block(int(16 * m), int(24 * m), int(72 * m), use_se=False, use_hswish=False, stride=2)),
-            ('block2_0', basic_block(int(24 * m), int(24 * m), int(88 * m), use_se=False, use_hswish=False)),
-            ('block2_0', basic_block(int(24 * m), int(40 * m), int(96 * m), use_hswish=False, stride=2, kernel_size=5)),
-            ('block2_1', basic_block(int(40 * m), int(40 * m), int(240 * m), use_hswish=False, kernel_size=5)),
-            ('block2_2', basic_block(int(40 * m), int(40 * m), int(240 * m), use_hswish=False, kernel_size=5)),
-            ('block3_0', basic_block(int(40 * m), int(48 * m), int(120 * m), use_se=False, stride=2)),
-            ('block3_1', basic_block(int(48 * m), int(48 * m), int(144 * m), use_se=False)),
-            ('block3_2', basic_block(int(48 * m), int(96 * m), int(288 * m), use_se=False)),
-            ('block3_3', basic_block(int(96 * m), int(96 * m), int(576 * m), use_se=False)),
-            ('block3_4', basic_block(int(96 * m), int(96 * m), int(576 * m))),
+            ('block1_1', basic_block(int(24 * m), int(24 * m), int(88 * m), use_se=False, use_hswish=False)),
+            ('block2_0', basic_block(int(24 * m), int(40 * m), int(96 * m), stride=2, kernel_size=5)),
+            ('block2_1', basic_block(int(40 * m), int(40 * m), int(240 * m), kernel_size=5)),
+            ('block2_2', basic_block(int(40 * m), int(40 * m), int(240 * m), kernel_size=5)),
+            ('block2_3', basic_block(int(40 * m), int(48 * m), int(120 * m), kernel_size=5)),
+            ('block2_4', basic_block(int(48 * m), int(48 * m), int(144 * m), kernel_size=5)),
+            ('block3_0', basic_block(int(48 * m), int(96 * m), int(288 * m), kernel_size=5, stride=2)),
+            ('block3_1', basic_block(int(96 * m), int(96 * m), int(576 * m), kernel_size=5)),
+            ('block3_2', basic_block(int(96 * m), int(96 * m), int(576 * m), kernel_size=5)),
             ('conv1', Conv2dBNRelu(int(96 * m), int(576 * m), kernel_size=1, use_hswish=True)),
             ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
             ('conv2', Conv2dRelu(int(576 * m), int(1024 * m), kernel_size=1, use_hswish=True)),
             ('flatten', torch.nn.Flatten())
         ]))
-
-    def forward(self, input):
-        return self.features(input)

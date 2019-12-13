@@ -54,10 +54,6 @@ class EfficientNet(Model):
                                                                       ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
                                                                       ('dropout0', torch.nn.Dropout(dropout_ratio))]))
 
-    def forward(self, input):
-        return self.features(input)
-
-
     def _make_stage(self, index):
         expansion_factor, kernel_size, in_planes, out_planes, stride, num_layers = self.BASIC_CONFIG[index]
         in_planes = int(in_planes * self.width_multiplier)

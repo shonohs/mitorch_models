@@ -9,6 +9,6 @@ from .shufflenetv2 import ShuffleNetV2
 from .squeezenet import SqueezeNet
 from .ssd_lite import SSDLite
 from .ssdlite_extra_layers import SSDLiteExtraLayers
-from .vgg import VGG_A, VGG_B, VGG_C, VGG_D, VGG_E, VGG16
+from .vgg import VGG_A, VGG_B, VGG_C, VGG_D, VGG_E, VGG16, VGG16ForSSD
 
 from .factory import ModelFactory

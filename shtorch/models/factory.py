@@ -12,11 +12,26 @@ class ModelFactory:
         'EfficientNetB7': lambda num_classes: Classifier(EfficientNetB7(), num_classes),
         'MobileNetV2': lambda num_classes: Classifier(MobileNetV2(), num_classes),
         'MobileNetV3': lambda num_classes: Classifier(MobileNetV3(), num_classes),
-        'MobileNetV2SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV2()), num_classes),
+        'SEResNext50': lambda num_classes: Classifier(SEResNext50(), num_classes),
         'ShuffleNet': lambda num_classes: Classifier(ShuffleNet(), num_classes),
         'ShuffleNetV2': lambda num_classes: Classifier(ShuffleNetV2(), num_classes),
         'SqueezeNet': lambda num_classes: Classifier(SqueezeNet(), num_classes),
         'VGG16': lambda num_classes: Classifier(VGG16(), num_classes),
+        'EfficientNetB0-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB0()), num_classes),
+        'EfficientNetB1-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB1()), num_classes),
+        'EfficientNetB2-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB2()), num_classes),
+        'EfficientNetB3-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB3()), num_classes),
+        'EfficientNetB4-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB4()), num_classes),
+        'EfficientNetB5-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB5()), num_classes),
+        'EfficientNetB6-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB6()), num_classes),
+        'EfficientNetB7-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB7()), num_classes),
+        'MobileNetV2-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV2()), num_classes),
+        'MobileNetV3-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV3()), num_classes),
+        'MobileNetV3Small-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV3Small()), num_classes),
+        'SEResNext50-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(SEResNext50()), num_classes),
+        'SEResNext101-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(SEResNext101()), num_classes),
+        'ShuffleNetV2-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(ShuffleNetV2()), num_classes),
+        'VGG16-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(VGG16ForSSD()), num_classes)
     }
 
 
