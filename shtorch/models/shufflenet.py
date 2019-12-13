@@ -79,6 +79,3 @@ class ShuffleNet(Model):
         for i in range(num_blocks-1):
             blocks.append((f'block{index}_{i+1}', ShuffleNet.BasicBlock(out_channels, out_channels, num_groups)))
         return blocks
-
-    def forward(self, input):
-        return self.features(input)

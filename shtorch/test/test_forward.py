@@ -37,6 +37,30 @@ class TestForward(unittest.TestCase):
     def test_mobilenetv3small(self):
         self._test_model(MobileNetV3Small(), 224)
 
+    def test_resnext14(self):
+        self._test_model(ResNext14(), 224)
+
+    def test_resnext26(self):
+        self._test_model(ResNext26(), 224)
+
+    def test_resnext50(self):
+        self._test_model(ResNext50(), 224)
+
+    def test_resnext101(self):
+        self._test_model(ResNext101(), 224)
+
+    def test_seresnext14(self):
+        self._test_model(SEResNext14(), 224)
+
+    def test_seresnext26(self):
+        self._test_model(SEResNext26(), 224)
+
+    def test_seresnext50(self):
+        self._test_model(SEResNext50(), 224)
+
+    def test_seresnext101(self):
+        self._test_model(SEResNext101(), 224)
+
     def test_shufflenet(self):
         self._test_model(ShuffleNet(), 224)
 

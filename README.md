@@ -14,6 +14,8 @@ This library is optimized for readability. We think it will help you understand 
 * MobileNetV3
 * ShuffleNet
 * ShuffleNetV2
+* ResNext14, ResNext26, ResNext50, ResNext101
+* SEResNext14, SEResNext26, SEResNext50, SEResNext101
 * EfficientNetB0, B1, B2, B3, B4, B5, B6, B7
 
 ### Object Detection
