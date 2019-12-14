@@ -1,6 +1,8 @@
 import torch
 import numpy as np
 from .base import ModuleBase
+from .non_max_suppression import NonMaxSuppression
+
 
 class SSDPredictor(ModuleBase):
     def __init__(self, num_classes, prior_box):
@@ -12,66 +14,14 @@ class SSDPredictor(ModuleBase):
         self.iou_threshold = 0.45
         self.prob_threshold = 0.05
 
+        self.non_max_suppression = NonMaxSuppression()
+
     def _non_maximum_suppression(self, boxes, class_probs, max_detections):
         """Remove overlapping bouding boxes
         Args:
             boxes: shape (num_prior, 4)
             class_probs: shape (num_prior, num_class)
         """
-        assert len(boxes) == len(class_probs)
-        assert len(boxes.shape) == 2 and boxes.shape[1] == 4
-        assert len(class_probs.shape) == 2 and class_probs.shape[1] == self.num_classes
-
-        # max_probs: shape (num_prior,). max_classes: shape (num_prior,).
-        max_probs, max_classes = torch.max(class_probs, dim=1)
-        assert len(max_probs.shape) == 1
-        assert len(max_classes.shape) == 1
-
-        areas = (boxes[:,2] - boxes[:,0]) * (boxes[:,3] - boxes[:,1])
-
-        selected_boxes = []
-        selected_classes = []
-        selected_probs = []
-
-        while len(selected_boxes) < max_detections:
-            # Select the prediction with the highest probability.
-            prob, i = torch.max(max_probs, dim=0)
-            if prob < self.prob_threshold:
-                break
-
-            # Save the selected prediction
-            selected_boxes.append(boxes[i])
-            selected_classes.append(int(max_classes[i]))
-            selected_probs.append(float(max_probs[i]))
-
-            box = boxes[i]
-            other_indices = torch.cat((torch.arange(i), torch.arange(i+1, len(boxes))))
-            other_boxes = boxes[other_indices]
-
-            # Get overlap between the 'box' and 'other_boxes'
-            x1 = torch.max(box[0], other_boxes[:,0])
-            y1 = torch.max(box[1], other_boxes[:,1])
-            x2 = torch.min(box[2], other_boxes[:,2])
-            y2 = torch.min(box[3], other_boxes[:,3])
-            w = torch.clamp(x2 - x1, min=0, max=1)
-            h = torch.clamp(y2 - y1, min=0, max=1)
-
-            # Calculate Intersection Over Union (IOU)
-            overlap_area = w * h
-            iou = overlap_area / (areas[i] + areas[other_indices] - overlap_area)
-
-            # Find the overlapping predictions
-            #overlapping_indices = torch.squeeze(other_indices[torch.nonzero(iou > self.iou_threshold)])
-            overlapping_indices = other_indices[torch.nonzero(iou > self.iou_threshold)].view(-1)
-            overlapping_indices = torch.cat((overlapping_indices, torch.tensor([i], device=overlapping_indices.device))) # Append i to the indices.
-
-            # Set the probability of overlapping predictions to zero, and udpate max_probs and max_classes.
-            # This is assuming multi-label predictions.
-            class_probs[overlapping_indices,max_classes[i]] = 0
-            max_probs[overlapping_indices], max_classes[overlapping_indices] = torch.max(class_probs[overlapping_indices], dim=1)
-
-        assert len(selected_boxes) == len(selected_classes) and len(selected_boxes) == len(selected_probs)
-        return selected_boxes, selected_classes, selected_probs
 
 
     def reshape_ssd_predictions(self, predictions):
@@ -117,12 +67,11 @@ class SSDPredictor(ModuleBase):
         pred_classification = torch.nn.functional.softmax(pred_classification, dim=-1)
         pred_classification = pred_classification[:,:,1:] # Shape: (N, num_prior, num_classes)
 
-        results = []
-        for i in range(batch_num):
-            boxes, classes, probs = self._non_maximum_suppression(bounding_boxes[i], pred_classification[i], self.max_detections)
+        results = self.non_max_suppression(bounding_boxes, pred_classification)
+        final_results = []
+        for boxes, classes, probs in results:
             result = []
             for i in range(len(boxes)):
                 result.append([int(classes[i]), float(probs[i]), float(boxes[i][0]), float(boxes[i][1]), float(boxes[i][2]), float(boxes[i][3])])
-            results.append(result)
-
-        return results
+            final_results.append(result)
+        return final_results

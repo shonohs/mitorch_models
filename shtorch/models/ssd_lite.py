@@ -17,9 +17,12 @@ class SSDLite(Model):
             cls = self.conv_cls1(self.conv_cls0(input))
             return loc, cls
 
-    def __init__(self, backbone, num_classes, prior_box = PriorBox()):
+    def __init__(self, backbone, num_classes, prior_box = None):
         super(SSDLite, self).__init__(None, use_bn=True)
         self.base_model = backbone
+
+        if not prior_box:
+            prior_box = PriorBox(len(backbone.output_dim))
 
         num_priors = prior_box.get_num_priors()
 
@@ -29,6 +32,7 @@ class SSDLite(Model):
 
     def forward(self, input):
         features = self.base_model(input)
+
         assert len(features) == len(self.detection_blocks)
 
         return [b(features[i]) for i, b in enumerate(self.detection_blocks)]

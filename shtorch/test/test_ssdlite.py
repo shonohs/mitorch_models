@@ -26,7 +26,21 @@ class TestSSDLite(unittest.TestCase):
         self._test_model(VGG16ForSSD, 320)
 
     def _test_model(self, model_class, input_size):
+        self._test_extra_layer_model(model_class, input_size)
+        self._test_fpn_model(model_class, input_size)
+
+    def _test_extra_layer_model(self, model_class, input_size):
         model = SSDLite(SSDLiteExtraLayers(model_class()), 3)
+        model.eval()
+        inputs = torch.tensor(np.random.rand(1, 3, input_size, input_size), dtype=torch.float32)
+        outputs = model(inputs)
+        self.assertIsNotNone(outputs)
+        predictions = model.predictor(outputs)
+        self.assertIsNotNone(predictions)
+        self.assertIsNotNone(model.loss)
+
+    def _test_fpn_model(self, model_class, input_size):
+        model = SSDLite(FeaturePyramidNetwork(model_class()), 3)
         model.eval()
         inputs = torch.tensor(np.random.rand(1, 3, input_size, input_size), dtype=torch.float32)
         outputs = model(inputs)

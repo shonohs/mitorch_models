@@ -12,6 +12,7 @@ class ModelFactory:
         'EfficientNetB7': lambda num_classes: Classifier(EfficientNetB7(), num_classes),
         'MobileNetV2': lambda num_classes: Classifier(MobileNetV2(), num_classes),
         'MobileNetV3': lambda num_classes: Classifier(MobileNetV3(), num_classes),
+        'MobileNetV3Small': lambda num_classes: Classifier(MobileNetV3Small(), num_classes),
         'SEResNext50': lambda num_classes: Classifier(SEResNext50(), num_classes),
         'ShuffleNet': lambda num_classes: Classifier(ShuffleNet(), num_classes),
         'ShuffleNetV2': lambda num_classes: Classifier(ShuffleNetV2(), num_classes),
@@ -31,7 +32,11 @@ class ModelFactory:
         'SEResNext50-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(SEResNext50()), num_classes),
         'SEResNext101-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(SEResNext101()), num_classes),
         'ShuffleNetV2-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(ShuffleNetV2()), num_classes),
-        'VGG16-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(VGG16ForSSD()), num_classes)
+        'VGG16-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(VGG16ForSSD()), num_classes),
+
+        'MobileNetV2-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV2()), num_classes),
+        'MobileNetV3-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3()), num_classes),
+        'MobileNetV3Small-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3Small()), num_classes),
     }
 
 
