@@ -35,7 +35,9 @@ class SqueezeNet(Model):
             ('block2_2', basic_block(384, int(512 * r), 512)),
             ('block2_3', basic_block(512, int(512 * r), 512)),
             ('dropout', torch.nn.Dropout(p=dropout_ratio)),
-            ('pool3', torch.nn.AdaptiveAvgPool2d(1))]))
+            ('pool3', torch.nn.AdaptiveAvgPool2d(1)),
+            ('flatten', torch.nn.Flatten())
+        ]))
 
     def forward(self, input):
         return self.features(input)

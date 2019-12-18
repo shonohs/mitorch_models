@@ -32,7 +32,7 @@ class SSDPredictor(ModuleBase):
     def predict_class(self, pred_classification):
         # Remove background predictions and adjust the class number
         pred_classification = torch.nn.functional.softmax(pred_classification, dim=-1)
-        pred_classification = pred_classification[:,:,1:] # Shape: (N, num_prior, num_classes)
+        return pred_classification[:,:,1:] # Shape: (N, num_prior, num_classes)
 
     def forward(self, predictions):
         """ Get Bounding boxes.
