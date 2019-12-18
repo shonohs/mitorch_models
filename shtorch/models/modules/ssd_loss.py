@@ -11,6 +11,7 @@ class SSDLoss(ModuleBase):
         self.neg_pos_ratio = 3
         self.num_classes = num_classes
         self.prior_box = prior_box
+        self.num_classifier = num_classes + 1 # SSD has background class.
 
 
     def hard_negative_mining(self, pred_classification, target_classification, neg_pos_ratio):
@@ -139,7 +140,7 @@ class SSDLoss(ModuleBase):
         pred_classification = []
         for loc, cls in predictions:
             loc = loc.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, 4)
-            cls = cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classes + 1)
+            cls = cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifier)
             pred_location.append(loc)
             pred_classification.append(cls)
         return (torch.cat(pred_location, dim=1), torch.cat(pred_classification, dim=1))
@@ -163,9 +164,9 @@ class SSDLoss(ModuleBase):
         # pred_location.shape should be (N, num_prior, 4)
         assert (len(pred_location.shape) == 3 and pred_location.shape[0] == batch_num
                 and pred_location.shape[1] == len(priors) and pred_location.shape[2] == 4), "pred_location shape {} is not expected".format(pred_location.shape)
-        # pred_classification.shape should be (N, num_prior, num_class+1)
+        # pred_classification.shape should be (N, num_prior, num_classes + 1)
         assert (len(pred_classification.shape) == 3 and pred_classification.shape[0] == batch_num
-                and pred_classification.shape[1] == len(priors) and pred_classification.shape[2] == self.num_classes+1)
+                and pred_classification.shape[1] == len(priors) and pred_classification.shape[2] == self.num_classifier)
 
         # target_location: shape (N, num_prior, 4)
         # target_classification: shape (N, num_prior)

@@ -4,6 +4,7 @@ from .feature_pyramid_network import FeaturePyramidNetwork
 from .mobilenetv2 import MobileNetV2
 from .mobilenetv3 import MobileNetV3, MobileNetV3Small
 from .resnext import ResNext14, ResNext26, ResNext50, ResNext101
+from .retinanet import RetinaNet
 from .seresnext import SEResNext14, SEResNext26, SEResNext50, SEResNext101
 from .shufflenet import ShuffleNet
 from .shufflenetv2 import ShuffleNetV2

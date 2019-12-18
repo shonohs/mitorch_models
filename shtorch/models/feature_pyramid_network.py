@@ -32,7 +32,7 @@ class FeaturePyramidNetwork(Model):
         self.upsample2 = torch.nn.UpsamplingNearest2d(scale_factor=2)
         self.conv3 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=3, padding=1, stride=2) # P_6
 
-        self.conv4 = torch.nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=2)
+        self.conv4 = torch.nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=2) # P_7
 
         self.activation = torch.nn.ReLU()
 

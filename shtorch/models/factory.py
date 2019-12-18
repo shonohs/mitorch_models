@@ -37,6 +37,10 @@ class ModelFactory:
         'MobileNetV2-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV2()), num_classes),
         'MobileNetV3-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3()), num_classes),
         'MobileNetV3Small-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3Small()), num_classes),
+
+        'MobileNetV2-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV2()), num_classes),
+        'MobileNetV3-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV3()), num_classes),
+        'MobileNetV3Small-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV3Small()), num_classes)
     }
 
 
