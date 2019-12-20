@@ -19,7 +19,7 @@ class FeaturePyramidNetwork(Model):
         base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
         super(FeaturePyramidNetwork, self).__init__([out_channels] * 5)
 
-        self.backbone = backbone
+        self.base_model = backbone
 
         self.conv0_0 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=1)
         self.conv0_1 = torch.nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1) # P_5
@@ -37,7 +37,7 @@ class FeaturePyramidNetwork(Model):
         self.activation = torch.nn.ReLU()
 
     def forward(self, input):
-        base_features = self.backbone(input, self.base_feature_names)
+        base_features = self.base_model(input, self.base_feature_names)
 
         x = self.conv0_0(base_features[0])
         x = self.upsample0(x)

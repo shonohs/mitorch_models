@@ -35,7 +35,7 @@ class SSDLiteExtraLayers(Model):
         base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
         super(SSDLiteExtraLayers, self).__init__(base_output_shapes + [int(512 * m), int(256 * m), int(256 * m), int(128 * m)])
 
-        self.backbone = backbone
+        self.base_model = backbone
 
         in_channels = backbone.output_dim
 
@@ -49,7 +49,7 @@ class SSDLiteExtraLayers(Model):
         self.conv3_1 = Conv2dAct(int(256 * m), int(128 * m), kernel_size=1, use_bn=True)
 
     def forward(self, input):
-        features = self.backbone.forward(input, self.base_feature_names)
+        features = self.base_model.forward(input, self.base_feature_names)
         f0 = self.conv0_1(self.conv0_0(features[-1]))
         f1 = self.conv1_1(self.conv1_0(f0))
         f2 = self.conv2_1(self.conv2_0(f1))
