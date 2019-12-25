@@ -1,9 +1,10 @@
+import math
 import torch
 from .model import Model
-from .modules import Conv2dAct, FocalLoss, RetinaPriorBox, RetinaPredictor
+from .modules import Conv2dAct, FocalLoss, RetinaPriorBox, RetinaPredictor, ModuleBase
 
 class RetinaNet(Model):
-    class DetectionBlock(torch.nn.Module):
+    class DetectionBlock(ModuleBase):
         def __init__(self, in_channels, num_outputs, num_classes):
             super(RetinaNet.DetectionBlock, self).__init__()
 
@@ -33,6 +34,10 @@ class RetinaNet(Model):
             cls = self.conv_cls4(cls)
 
             return loc, cls
+
+        def reset_parameters(self):
+            pi = 0.01
+            self.conv_cls4.bias.data.fill_(-math.log((1-pi)/pi))
 
     def __init__(self, backbone, num_classes, prior_box = None):
         super(RetinaNet, self).__init__(None)

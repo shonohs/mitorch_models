@@ -49,4 +49,6 @@ class ModelFactory:
         if model_name not in ModelFactory.PREDEFINED_MODELS:
             raise NotImplementedError(f"Unknown model name: {model_name}")
 
-        return ModelFactory.PREDEFINED_MODELS[model_name](num_classes)
+        model = ModelFactory.PREDEFINED_MODELS[model_name](num_classes)
+        model.reset_parameters()
+        return model

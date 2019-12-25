@@ -61,3 +61,8 @@ class Model(torch.nn.Module):
 
     def _extract_outputs_hook(self, module, input, output, index):
         self._outputs[index] = output
+
+    def reset_parameters(self):
+        for m in self.modules():
+            if isinstance(m, ModuleBase):
+                m.reset_parameters()
