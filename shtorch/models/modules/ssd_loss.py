@@ -7,7 +7,8 @@ from .base import ModuleBase
 class SSDLoss(ModuleBase):
     def __init__(self, num_classes, prior_box):
         super(SSDLoss, self).__init__()
-        self.iou_threshold = 0.5
+        self.negative_iou_threshold = 0.5
+        self.positive_iou_threshold = 0.5
         self.neg_pos_ratio = 3
         self.num_classes = num_classes
         self.prior_box = prior_box
@@ -57,16 +58,18 @@ class SSDLoss(ModuleBase):
         union_areas = box0_areas + box1_areas - intersection_areas
         return intersection_areas / union_areas
 
-    def assign_priors(self, target, priors, iou_threshold):
+    def assign_priors(self, target, priors, negative_iou_threshold, positive_iou_threshold):
         """Given ground truth boxes, find corresponding prior boxes and calculate location diffs and labels for SSD loss.
         Args:
             target: shape (num_labels, 5) tensor [label, min_x, min_y, max_x, max_y]
             priors: (num_priors, 4) [min_x, min_y, max_x, max_y]
-            iou_threshold: minimum IOU between a ground truth and a prior box to be considiered as matched.
+            negative_iou_threshold: maxmimum IOU between a ground truth and a prior box to be considered as negative example.
+            positive_iou_threshold: minimum IOU between a ground truth and a prior box to be considiered as matched.
         Returns: (target_location, target_labels)
             target_location (num_priors, 4)
             target_labels (num_priors,)
         """
+        assert negative_iou_threshold <= positive_iou_threshold
 
         # If there is no golden truths, return an empty array.
         if target.shape[0] == 0:
@@ -92,7 +95,9 @@ class SSDLoss(ModuleBase):
 
         matched_targets = target[best_target_index, :] # Shape: (num_priors, 5)
         target_labels = matched_targets[:,0] + 1 # Increment to make the label 0 background.
-        target_labels[best_target_overlap < iou_threshold] = 0 # If IOU is too small, set it as background.
+        target_labels[best_target_overlap <= negative_iou_threshold] = 0 # If IOU is too small, set it as background.
+        # If IOU is between negative_iou_threshold and positive_iou_threshold, ignore it.
+        target_labels[best_target_overlap > negative_iou_threshold and best_target_overlap < positive_iou_threshold] = -1
 
         priors_center_xy = (priors[:,:2] + priors[:,2:]) / 2
         priors_wh = priors[:,2:] - priors[:,:2]
@@ -121,7 +126,7 @@ class SSDLoss(ModuleBase):
         target_classifications = []
         for target in targets:
             target = torch.tensor(target, device=priors.device)
-            target_location, target_classification = self.assign_priors(target, priors, self.iou_threshold)
+            target_location, target_classification = self.assign_priors(target, priors, self.negative_iou_threshold, self.positive_iou_threshold)
             target_locations.append(target_location)
             target_classifications.append(target_classification)
         return (torch.stack(target_locations), torch.stack(target_classifications))
@@ -164,6 +169,7 @@ class SSDLoss(ModuleBase):
         # pred_location.shape should be (N, num_prior, 4)
         assert (len(pred_location.shape) == 3 and pred_location.shape[0] == batch_num
                 and pred_location.shape[1] == len(priors) and pred_location.shape[2] == 4), "pred_location shape {} is not expected".format(pred_location.shape)
+
         # pred_classification.shape should be (N, num_prior, num_classes + 1)
         assert (len(pred_classification.shape) == 3 and pred_classification.shape[0] == batch_num
                 and pred_classification.shape[1] == len(priors) and pred_classification.shape[2] == self.num_classifier)
