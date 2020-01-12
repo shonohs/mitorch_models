@@ -95,9 +95,9 @@ class SSDLoss(ModuleBase):
 
         matched_targets = target[best_target_index, :] # Shape: (num_priors, 5)
         target_labels = matched_targets[:,0] + 1 # Increment to make the label 0 background.
-        target_labels[best_target_overlap <= negative_iou_threshold] = 0 # If IOU is too small, set it as background.
+        target_labels[best_target_overlap < negative_iou_threshold] = 0 # If IOU is too small, set it as background.
         # If IOU is between negative_iou_threshold and positive_iou_threshold, ignore it.
-        target_labels[best_target_overlap > negative_iou_threshold and best_target_overlap < positive_iou_threshold] = -1
+        target_labels[(best_target_overlap >= negative_iou_threshold) & (best_target_overlap < positive_iou_threshold)] = -1
 
         priors_center_xy = (priors[:,:2] + priors[:,2:]) / 2
         priors_wh = priors[:,2:] - priors[:,:2]
