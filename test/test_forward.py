@@ -93,14 +93,15 @@ class TestForward(unittest.TestCase):
         self._test_object_detection_model(SSDLite(SSDLiteExtraLayers(MobileNetV2()), 1), 320)
 
     def _test_model(self, model, input_size):
+        model = Classifier(model, 3)
         model.eval()
-        inputs = torch.tensor(np.random.rand(1, 3, input_size, input_size), dtype=torch.float32)
+        inputs = torch.tensor(np.random.rand(2, 3, input_size, input_size), dtype=torch.float32)
         outputs = model(inputs)
         self.assertIsNotNone(outputs)
 
     def _test_object_detection_model(self, model, input_size):
         model.eval()
-        inputs = torch.tensor(np.random.rand(1, 3, input_size, input_size), dtype=torch.float32)
+        inputs = torch.tensor(np.random.rand(2, 3, input_size, input_size), dtype=torch.float32)
         outputs = model(inputs)
         self.assertIsNotNone(outputs)
         predictions = model.predictor(outputs)

@@ -52,7 +52,9 @@ class EfficientNet(Model):
                                                                    + stages
                                                                    + [('conv1', Conv2dBNRelu(int(320 * m), int(1280 * m), kernel_size=1, use_swish=True)),
                                                                       ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
-                                                                      ('dropout0', torch.nn.Dropout(dropout_ratio))]))
+                                                                      ('dropout0', torch.nn.Dropout(dropout_ratio)),
+                                                                      ('flatten', torch.nn.Flatten())
+                                                                   ]))
 
     def _make_stage(self, index):
         expansion_factor, kernel_size, in_planes, out_planes, stride, num_layers = self.BASIC_CONFIG[index]

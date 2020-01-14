@@ -76,7 +76,9 @@ class ShuffleNetV2(Model):
                                                                      ('pool0', torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1))]
                                                                     + blocks
                                                                     + [('conv1', Conv2dAct(last_stage_out_channels, final_out_channels, kernel_size=1)),
-                                                                       ('pool1', torch.nn.AdaptiveAvgPool2d(1))]))
+                                                                       ('pool1', torch.nn.AdaptiveAvgPool2d(1)),
+                                                                       ('flatten', torch.nn.Flatten())
+                                                                    ]))
 
     def _make_stage(self, in_channels, out_channels, index, num_blocks, use_se):
         blocks = [(f'block{index}_0', ShuffleNetV2.DownsampleBasicBlock(in_channels, out_channels, use_se))]

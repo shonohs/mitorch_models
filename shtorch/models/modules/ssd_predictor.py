@@ -8,6 +8,7 @@ class SSDPredictor(ModuleBase):
     def __init__(self, num_classes, prior_box):
         super(SSDPredictor, self).__init__()
         self.num_classes = num_classes
+        self.num_classifier = num_classes + 1
         self.prior_box = prior_box
 
         self.max_detections = 10
@@ -16,14 +17,6 @@ class SSDPredictor(ModuleBase):
 
         self.non_max_suppression = NonMaxSuppression()
 
-    def _non_maximum_suppression(self, boxes, class_probs, max_detections):
-        """Remove overlapping bouding boxes
-        Args:
-            boxes: shape (num_prior, 4)
-            class_probs: shape (num_prior, num_class)
-        """
-
-
     def reshape_ssd_predictions(self, predictions):
         num_batch = len(predictions[0][0])
 
@@ -31,10 +24,15 @@ class SSDPredictor(ModuleBase):
         pred_classification = []
         for loc, cls in predictions:
             loc = loc.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, 4)
-            cls = cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classes + 1)
+            cls = cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifier)
             pred_location.append(loc)
             pred_classification.append(cls)
         return (torch.cat(pred_location, dim=1), torch.cat(pred_classification, dim=1))
+
+    def predict_class(self, pred_classification):
+        # Remove background predictions and adjust the class number
+        pred_classification = torch.nn.functional.softmax(pred_classification, dim=-1)
+        return pred_classification[:,:,1:] # Shape: (N, num_prior, num_classes)
 
     def forward(self, predictions):
         """ Get Bounding boxes.
@@ -63,15 +61,11 @@ class SSDPredictor(ModuleBase):
         bounding_boxes = torch.cat((pred_location_centers - pred_location_sizes / 2, pred_location_centers + pred_location_sizes / 2), 2)
         assert len(bounding_boxes.shape) == 3 and bounding_boxes.shape[2] == 4
 
-        # Remove background predictions and adjust the class number
-        pred_classification = torch.nn.functional.softmax(pred_classification, dim=-1)
-        pred_classification = pred_classification[:,:,1:] # Shape: (N, num_prior, num_classes)
+        pred_classification = self.predict_class(pred_classification)
 
         results = self.non_max_suppression(bounding_boxes, pred_classification)
         final_results = []
         for boxes, classes, probs in results:
-            result = []
-            for i in range(len(boxes)):
-                result.append([int(classes[i]), float(probs[i]), float(boxes[i][0]), float(boxes[i][1]), float(boxes[i][2]), float(boxes[i][3])])
+            result = [[int(classes[i]), float(probs[i]), float(boxes[i][0]), float(boxes[i][1]), float(boxes[i][2]), float(boxes[i][3])] for i in range(len(boxes))]
             final_results.append(result)
         return final_results

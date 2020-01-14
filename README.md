@@ -22,3 +22,26 @@ This library is optimized for readability. We think it will help you understand 
 ### Object Detection
 
 * SSDLite
+* RetinaNet (in preview)
+
+## Benchmarks
+
+Name | Model size (1 class)
+:--- | :-------------------
+SqueezeNet | 2.9MB
+MobileNetV2 | 8.9MB
+MobileNetV3 | 11MB
+MobileNetV3Small | 4.3MB
+ShuffleNet | 3.5MB
+ShuffleNetV2 | 5.0MB
+ResNext50 | 90MB
+SEResNext50 | 100MB
+EfficientNetB0 | 28MB
+MobileNetV2-SSDLite | 13MB
+MobileNetV3-SSDLite | 15MB
+MobileNetV3Small-SSDLite | 8.0MB
+SEResNext50-SSDLite | 106MB
+MobileNetV2-FPN-RetinaNet | 51MB
+MobileNetV2-FPN-SSDLite | 32MB
+MobileNetV3-FPN-SSDLite | 31MB
+MobileNetV3Small-FPN-SSDLite | 20MB

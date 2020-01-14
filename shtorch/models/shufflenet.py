@@ -72,7 +72,9 @@ class ShuffleNet(Model):
         self.features = torch.nn.Sequential(collections.OrderedDict([('conv0', Conv2dAct(3, 24, kernel_size=3, stride=2, padding=1)),
                                                                      ('pool0', torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1))]
                                                                     + blocks
-                                                                    + [('pool1', torch.nn.AdaptiveAvgPool2d(1))]))
+                                                                    + [('pool1', torch.nn.AdaptiveAvgPool2d(1)),
+                                                                       ('flatten', torch.nn.Flatten())
+                                                                    ]))
 
     def _make_stage(self, in_channels, out_channels, num_blocks, num_groups, index, skip_first_group_conv=False):
         blocks = [(f'block{index}_0', ShuffleNet.DownsampleBasicBlock(in_channels, out_channels, num_groups, stride=2, skip_first_group_conv=skip_first_group_conv))]
