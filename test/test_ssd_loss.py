@@ -1,6 +1,6 @@
 import unittest
 import torch
-from shtorch.models.modules import SSDLoss
+from mitorch.models.modules import SSDLoss
 
 
 class TestSSDLoss(unittest.TestCase):

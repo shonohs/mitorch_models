@@ -1,6 +1,6 @@
 import unittest
 import torch
-from shtorch.models.modules import FocalLoss
+from mitorch.models.modules import FocalLoss
 
 
 class TestFocalLoss(unittest.TestCase):

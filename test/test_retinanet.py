@@ -1,7 +1,7 @@
 import unittest
 import torch
 import numpy as np
-from shtorch.models import *
+from mitorch.models import *
 
 
 class TestRetinaNet(unittest.TestCase):

@@ -1,10 +1,10 @@
 import setuptools
 
-setuptools.setup(name='shtorch-models',
+setuptools.setup(name='mitorch-models',
                  version='0.0.0',
-                 description='Collection of pytorch models focused on readability',
-                 url='https://github.com/shonohs/shtorch_models',
-                 packages=setuptools.find_namespace_packages(include=['shtorch.models', 'shtorch.models.*']),
+                 description='Collection of pytorch models with a focus on code readability',
+                 url='https://github.com/shonohs/mitorch_models',
+                 packages=setuptools.find_namespace_packages(include=['mitorch.models', 'mitorch.models.*']),
                  classifiers=[
                      'Development Status :: 4 - Beta',
                      'License :: OSI Approved :: MIT License',

@@ -1,6 +1,6 @@
 import unittest
 import torch
-from shtorch.models import *
+from mitorch.models import *
 
 
 class TestBidirectionalFeaturePyramidNetwork(unittest.TestCase):

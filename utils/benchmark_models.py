@@ -2,7 +2,7 @@ import argparse
 import os
 import tempfile
 import torch
-from shtorch.models import ModelFactory
+from mitorch.models import ModelFactory
 
 def get_model_size(model):
     state_dict = model.state_dict()

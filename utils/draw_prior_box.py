@@ -4,7 +4,7 @@ import sys
 import torch
 import PIL.Image
 import PIL.ImageDraw
-import shtorch.models.modules
+import mitorch.models.modules
 
 class BoundingBoxDrawer(object):
     COLOR_CODES = ["black", "brown", "red", "orange", "yellow", "green", "blue", "violet", "grey", "white"]
@@ -40,7 +40,7 @@ def main():
     parser.add_argument('--output', type=str, default='prior_box.png', help="Output image filename")
     parser.add_argument('--random', action='store_true', help="Show ramdonly picked boxes")
     args = parser.parse_args()
-    prior_box_class = getattr(sys.modules['shtorch.models.modules'], args.prior_box)
+    prior_box_class = getattr(sys.modules['mitorch.models.modules'], args.prior_box)
     prior_box = prior_box_class(len(args.size))
 
     draw_prior_box(prior_box, args.size, args.output, args.random)

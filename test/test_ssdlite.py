@@ -1,7 +1,7 @@
 import unittest
 import torch
 import numpy as np
-from shtorch.models import *
+from mitorch.models import *
 
 class TestSSDLite(unittest.TestCase):
     def test_efficientnetb0(self):

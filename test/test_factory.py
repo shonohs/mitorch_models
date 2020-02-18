@@ -1,5 +1,5 @@
 import unittest
-from shtorch.models import ModelFactory
+from mitorch.models import ModelFactory
 
 class TestModelFactory(unittest.TestCase):
     def test_all(self):

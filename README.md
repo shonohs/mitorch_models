@@ -1,4 +1,4 @@
-# shtorch-models
+# mitorch-models
 A collection of vision-related PyTorch models.
 
 ## Readability first
