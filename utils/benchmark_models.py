@@ -8,7 +8,7 @@ def get_model_size(model):
     state_dict = model.state_dict()
     with tempfile.NamedTemporaryFile() as file:
         torch.save(state_dict, file.name)
-        return os.path.getsize(file.name) // 1024
+        return os.path.getsize(file.name) // 1024 / 1024
 
 def benchmark_model(model_name, verbose):
     model = ModelFactory.create(model_name, 1)
@@ -17,7 +17,10 @@ def benchmark_model(model_name, verbose):
     model = ModelFactory.create(model_name, 100)
     model_size_100 = get_model_size(model)
 
-    print(f"Model size: 1 class: {model_size_1}KB, 100 classes: {model_size_100}KB")
+    model = ModelFactory.create(model_name, 1000)
+    model_size_1000 = get_model_size(model)
+
+    print(f"Model size: 1 class: {model_size_1:.1f}MB, 100 classes: {model_size_100:.1f}MB, 1000 classes: {model_size_1000:.1f}MB")
 
     if verbose:
         state_dict = model.state_dict()

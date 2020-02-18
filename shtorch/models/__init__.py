@@ -1,6 +1,7 @@
+from .bidirectional_feature_pyramid_network import BidirectionalFeaturePyramidNetwork
 from .classifier import Classifier
 from .efficientnet import EfficientNetB0, EfficientNetB1, EfficientNetB2, EfficientNetB3, EfficientNetB4, EfficientNetB5, EfficientNetB6, EfficientNetB7
-from .feature_pyramid_network import FeaturePyramidNetwork
+from .feature_pyramid_network import FeaturePyramidNetwork, FeaturePyramidNetworkLite
 from .mobilenetv2 import MobileNetV2
 from .mobilenetv3 import MobileNetV3, MobileNetV3Small
 from .resnext import ResNext14, ResNext26, ResNext50, ResNext101

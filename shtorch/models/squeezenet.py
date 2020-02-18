@@ -1,15 +1,16 @@
 import collections
 import torch
 from .model import Model
-from .modules import Conv2dBNRelu
+from .modules import Conv2dAct
+
 
 class SqueezeNet(Model):
     class BasicBlock(torch.nn.Module):
         def __init__(self, in_channels, squeeze_channels, expand_channels):
             super(SqueezeNet.BasicBlock, self).__init__()
-            self.conv0 = Conv2dBNRelu(in_channels, squeeze_channels, kernel_size=1)
-            self.conv1 = Conv2dBNRelu(squeeze_channels, expand_channels // 2, kernel_size=1)
-            self.conv2 = Conv2dBNRelu(squeeze_channels, expand_channels // 2, kernel_size=3, padding=1)
+            self.conv0 = Conv2dAct(in_channels, squeeze_channels, kernel_size=1)
+            self.conv1 = Conv2dAct(squeeze_channels, expand_channels // 2, kernel_size=1)
+            self.conv2 = Conv2dAct(squeeze_channels, expand_channels // 2, kernel_size=3, padding=1)
 
         def forward(self, input):
             x = self.conv0(input)
@@ -22,7 +23,7 @@ class SqueezeNet(Model):
         basic_block = SqueezeNet.BasicBlock
 
         self.features = torch.nn.Sequential(collections.OrderedDict([
-            ('conv0', Conv2dBNRelu(3, 64, kernel_size=3, stride=2, padding=1)),
+            ('conv0', Conv2dAct(3, 64, kernel_size=3, stride=2, padding=1)),
             ('pool0', torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
             ('block0_0', basic_block(64, int(128 * r), 128)),
             ('block0_1', basic_block(128, int(128 * r), 128)),
@@ -38,6 +39,3 @@ class SqueezeNet(Model):
             ('pool3', torch.nn.AdaptiveAvgPool2d(1)),
             ('flatten', torch.nn.Flatten())
         ]))
-
-    def forward(self, input):
-        return self.features(input)

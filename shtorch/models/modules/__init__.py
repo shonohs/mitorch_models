@@ -1,9 +1,10 @@
 from .activation import HardSwish, HardSigmoid
 from .addition import Add
 from .base import ModuleBase
-from .convolution import Conv2dBN, Conv2dBNRelu, Conv2dRelu, Conv2dAct
+from .convolution import Conv2dBN, Conv2dAct
 from .focal_loss import FocalLoss
 from .linear import LinearAct
+from .mbconv import MBConv
 from .prior_box import PriorBox
 from .retina_predictor import RetinaPredictor
 from .retina_prior_box import RetinaPriorBox

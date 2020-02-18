@@ -164,6 +164,6 @@ class VGG16ForSSD(VGG):
             ('conv4_0', Conv2dAct(512, 512, kernel_size=3, padding=1)),
             ('conv4_1', Conv2dAct(512, 512, kernel_size=3, padding=1)),
             ('conv4_2', Conv2dAct(512, 512, kernel_size=3, padding=1)),
-            ('pool4', torch.nn.MaxPool2d(kernel_size=3, stride=1)),
+            ('pool4', torch.nn.MaxPool2d(kernel_size=3, padding=1, stride=1)),
             ('conv5_0', Conv2dAct(512, 1024, kernel_size=3, padding=1)),
             ('conv5_1', Conv2dAct(1024, 1024, kernel_size=1))]))

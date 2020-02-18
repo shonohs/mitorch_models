@@ -22,9 +22,11 @@ class TestForward(unittest.TestCase):
     def test_efficientnetb5(self):
         self._test_model(EfficientNetB5(), EfficientNetB5.INPUT_SIZE)
 
+    @unittest.skip("Not enough memory")
     def test_efficientnetb6(self):
         self._test_model(EfficientNetB6(), EfficientNetB6.INPUT_SIZE)
 
+    @unittest.skip("Not enough memory")
     def test_efficientnetb7(self):
         self._test_model(EfficientNetB7(), EfficientNetB7.INPUT_SIZE)
 

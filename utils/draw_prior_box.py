@@ -26,12 +26,12 @@ def draw_prior_box(prior_box, size, output_filename, show_random):
 
     image = PIL.Image.new('RGB', (512, 512))
     drawer = BoundingBoxDrawer(image)
-    for box in boxes:
-        if (not show_random) or random.random() < (10 / len(boxes)):
-            drawer.draw_predictions(random.randint(0, 10), 0, *box)
+    draw_boxes = random.sample(boxes.tolist(), 10) if show_random else boxes
+    for box in draw_boxes:
+        drawer.draw_predictions(random.randint(0, 10), 0, *box)
 
     image.save(output_filename)
-
+    print(f"{len(draw_boxes)} out of {len(boxes)} boxes are drawn")
 
 def main():
     parser = argparse.ArgumentParser("Draw prior boxes on an image")

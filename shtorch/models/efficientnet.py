@@ -1,8 +1,9 @@
 """EfficientNet (https://arxiv.org/abs/1905.11946)"""
 import collections
+import math
 import torch
 from .model import Model
-from .modules import Add, Conv2dBN, Conv2dBNRelu, SEBlock
+from .modules import Conv2dAct, MBConv
 
 
 class EfficientNet(Model):
@@ -17,40 +18,18 @@ class EfficientNet(Model):
         [6, 3, 192, 320, 1, 1]
     ]
 
-    class BasicBlock(torch.nn.Module):
-        def __init__(self, in_channels, out_channels, expansion_factor, stride=1, kernel_size=3, se_reduction_ratio=4):
-            super(EfficientNet.BasicBlock, self).__init__()
-            intermediate_channels = in_channels * expansion_factor
-            self.conv0 = Conv2dBNRelu(in_channels, intermediate_channels, kernel_size=1, use_swish=True)
-            self.conv1 = Conv2dBNRelu(intermediate_channels, intermediate_channels, kernel_size=kernel_size, padding=kernel_size//2,
-                                      stride=stride, groups=intermediate_channels, use_swish=True)
-            self.se = SEBlock(intermediate_channels, se_reduction_ratio, use_swish=True)
-            self.conv2 = Conv2dBN(intermediate_channels, out_channels, kernel_size=1)
-            self.residual = Add() if stride == 1 and in_channels == out_channels else None
-
-        def forward(self, input):
-            x = self.conv0(input)
-            x = self.conv1(x)
-            x = self.se(x)
-            x = self.conv2(x)
-
-            if self.residual:
-                x = self.residual(x, input)
-
-            return x
-
     def __init__(self, width_multiplier = 1, depth_multiplier = 1, dropout_ratio = 0.2):
         m = width_multiplier
-        super(EfficientNet, self).__init__(int(1280 * width_multiplier))
+        super(EfficientNet, self).__init__(round(1280 * m / 8) * 8)
 
         self.width_multiplier = width_multiplier
         self.depth_multiplier = depth_multiplier
 
         stages = [s for i in range(len(self.BASIC_CONFIG)) for s in self._make_stage(i)]
 
-        self.features = torch.nn.Sequential(collections.OrderedDict([('conv0', Conv2dBNRelu(3, int(32 * m), kernel_size=3, padding=1, stride=2, use_swish=True))]
+        self.features = torch.nn.Sequential(collections.OrderedDict([('conv0', Conv2dAct(3, round(32 * m / 8) * 8, kernel_size=3, padding=1, stride=2, activation='swish'))]
                                                                    + stages
-                                                                   + [('conv1', Conv2dBNRelu(int(320 * m), int(1280 * m), kernel_size=1, use_swish=True)),
+                                                                   + [('conv1', Conv2dAct(round(320 * m / 8) * 8, round(1280 * m / 8) * 8, kernel_size=1, activation='swish')),
                                                                       ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
                                                                       ('dropout0', torch.nn.Dropout(dropout_ratio)),
                                                                       ('flatten', torch.nn.Flatten())
@@ -58,11 +37,12 @@ class EfficientNet(Model):
 
     def _make_stage(self, index):
         expansion_factor, kernel_size, in_planes, out_planes, stride, num_layers = self.BASIC_CONFIG[index]
-        in_planes = int(in_planes * self.width_multiplier)
-        out_planes = int(out_planes * self.width_multiplier)
+        in_planes = round(in_planes * self.width_multiplier / 8) * 8
+        out_planes = round(out_planes * self.width_multiplier / 8) * 8
+        expansion_planes = round(in_planes * expansion_factor / 8) * 8
         blocks = []
-        for i in range(int(num_layers * self.depth_multiplier)):
-            blocks.append((f'block{index}_{i}', EfficientNet.BasicBlock(in_planes, out_planes, expansion_factor, stride, kernel_size)))
+        for i in range(int(math.ceil(num_layers * self.depth_multiplier))):
+            blocks.append((f'block{index}_{i}', MBConv(in_planes, out_planes, expansion_planes, kernel_size=kernel_size, stride=stride, use_se_swish=True, activation='swish')))
             stride = 1
             in_planes = out_planes
 

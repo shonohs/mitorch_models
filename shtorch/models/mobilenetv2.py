@@ -2,7 +2,7 @@
 import collections
 import torch
 from .model import Model
-from .modules import Add, Conv2dBN, Conv2dBNRelu
+from .modules import Add, Conv2dBN, Conv2dAct
 
 
 class MobileNetV2(Model):
@@ -10,8 +10,8 @@ class MobileNetV2(Model):
         def __init__(self, in_channels, out_channels, expansion_factor, stride=1):
             super(MobileNetV2.BasicBlock, self).__init__()
             intermediate_channels = in_channels * expansion_factor
-            self.conv0 = Conv2dBNRelu(in_channels, intermediate_channels, kernel_size=1)
-            self.conv1 = Conv2dBNRelu(intermediate_channels, intermediate_channels, kernel_size=3,
+            self.conv0 = Conv2dAct(in_channels, intermediate_channels, kernel_size=1)
+            self.conv1 = Conv2dAct(intermediate_channels, intermediate_channels, kernel_size=3,
                                       padding=1, stride=stride, groups=intermediate_channels)
             self.conv2 = Conv2dBN(intermediate_channels, out_channels, kernel_size=1)
             self.residual = Add() if stride == 1 and in_channels == out_channels else None
@@ -24,12 +24,12 @@ class MobileNetV2(Model):
                 x = self.residual(x, input)
             return x
 
-    def __init__(self, width_multiplier = 1, use_relu6 = True):
-        super(MobileNetV2, self).__init__(output_dim = 1280, use_relu6 = True)
+    def __init__(self, width_multiplier = 1, activation='relu6'):
+        super(MobileNetV2, self).__init__(output_dim = 1280, activation=activation)
 
         m = width_multiplier
         self.features = torch.nn.Sequential(collections.OrderedDict([
-            ('conv0', Conv2dBNRelu(3, int(32 * m), kernel_size=3, padding=1, stride=2)),
+            ('conv0', Conv2dAct(3, int(32 * m), kernel_size=3, padding=1, stride=2)),
             ('block0_0', MobileNetV2.BasicBlock(int(32 * m), int(16 * m), expansion_factor=1)),
             ('block1_0', MobileNetV2.BasicBlock(int(16 * m), int(24 * m), expansion_factor=6, stride=2)),
             ('block1_1', MobileNetV2.BasicBlock(int(24 * m), int(24 * m), expansion_factor=6)),
@@ -47,7 +47,7 @@ class MobileNetV2(Model):
             ('block5_1', MobileNetV2.BasicBlock(int(160 * m), int(160 * m), expansion_factor=6)),
             ('block5_2', MobileNetV2.BasicBlock(int(160 * m), int(160 * m), expansion_factor=6)),
             ('block6_0', MobileNetV2.BasicBlock(int(160 * m), int(320 * m), expansion_factor=6)),
-            ('conv1', Conv2dBNRelu(int(320 * m), int(1280 * m), kernel_size=1)),
+            ('conv1', Conv2dAct(int(320 * m), int(1280 * m), kernel_size=1)),
             ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
             ('flatten', torch.nn.Flatten())
         ]))

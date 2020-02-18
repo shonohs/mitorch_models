@@ -15,7 +15,6 @@ class TestSSDLoss(unittest.TestCase):
                                [0, 0, 1, 1.0]], dtype=torch.float)
 
         target_loc, target_labels = ssd_loss.assign_priors(target, priors, 0.5, 0.5)
-        print(target_labels)
         self.assertEqual(list(target_labels), [0, 0, 0, 1, 1])
 
         target_loc, target_labels = ssd_loss.assign_priors(target, priors, 0.4, 0.5)
