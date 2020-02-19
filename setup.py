@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='mitorch-models',
-                 version='0.0.0',
+                 version='0.0.1',
                  description='Collection of pytorch models with a focus on code readability',
                  url='https://github.com/shonohs/mitorch_models',
                  packages=setuptools.find_namespace_packages(include=['mitorch.models', 'mitorch.models.*']),
