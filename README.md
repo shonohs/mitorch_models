@@ -71,3 +71,10 @@ EfficientNetB3-FPNLite-RetinaNet | 66.7MB
 MobileNetV2-FPNLite-RetinaNet | 32MB
 MobileNetV3-FPNLite-RetinaNet | 38.5MB
 MobileNetV3Small-FPNLite-RetinaNet | 26.9MB
+EfficientNetB0-FPNLite-RetinaNetLite | 24.5MB
+EfficientNetB1-FPNLite-RetinaNetLite | 33.3MB
+EfficientNetB2-FPNLite-RetinaNetLite | 38.3MB
+EfficientNetB3-FPNLite-RetinaNetLite | 50.4MB
+MobileNetV2-FPNLite-RetinaNetLite | 15.3MB
+MobileNetV3-FPNLite-RetinaNetLite | 22.3MB
+MobileNetV3Small-FPNLite-RetinaNetLite | 10.7MB
