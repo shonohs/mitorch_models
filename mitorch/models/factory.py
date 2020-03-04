@@ -1,4 +1,5 @@
 from . import *
+from .heads import *
 
 class ModelFactory:
     PREDEFINED_MODELS = {

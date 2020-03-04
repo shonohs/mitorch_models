@@ -1,33 +1,13 @@
 import torch
-from .model import Model
-from .modules import Add, Conv2dAct
+from .head import Head
+from ..modules import Add, Conv2dAct
 
 
-class FeaturePyramidNetwork(Model):
-    BASE_FEATURE_NAMES = {'EfficientNetB0': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'EfficientNetB1': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'EfficientNetB2': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'EfficientNetB3': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'EfficientNetB4': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'EfficientNetB5': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'EfficientNetB6': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'EfficientNetB7': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'],
-                          'MobileNetV2': ['features.conv1', 'features.block5_0.conv0', 'features.block3_0.conv0'], # stride 32, 16, 8
-                          'MobileNetV3': ['features.conv1', 'features.block4_0.conv0', 'features.block3_0.conv0'],
-                          'MobileNetV3Small': ['features.conv1', 'features.block3_0.conv0', 'features.block2_0.conv0'],
-                          'SEResNext50': ['features.block3_2', 'features.block3_0.conv0', 'features.block2_0.conv0'],
-                          'ShuffleNetV2': ['features.conv1', 'features.block2_0.conv0', 'features.block1_0.conv0'],
-                          'VGG16ForSSD': ['features.conv5_1', 'features.conv3_2', 'features.conv2_2']
-    }
-
+class FeaturePyramidNetwork(Head):
     def __init__(self, backbone, out_channels=256):
-        self.base_feature_names = self.BASE_FEATURE_NAMES.get(type(backbone).__name__, None)
-        if not self.base_feature_names:
-            raise NotImplementedError(f"FeaturePyramidNetwork: The backbone {type(backbone).__name__} is not supported")
-        base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
-        super(FeaturePyramidNetwork, self).__init__([out_channels] * 5)
-
+        super(FeaturePyramidNetwork, self).__init__(backbone, [5, 4, 3], [out_channels] * 5)
         self.base_model = backbone
+        base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
 
         self.conv0_0 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=1)
         self.conv0_1 = torch.nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1) # P_5
@@ -47,7 +27,7 @@ class FeaturePyramidNetwork(Model):
         self.activation = torch.nn.ReLU()
 
     def forward(self, input):
-        base_features = self.base_model(input, self.base_feature_names)
+        base_features = self.get_base_features(input)
 
         # Coarsest first. C5, C4, C3
         assert [b.shape[2] for b in base_features] == sorted([b.shape[2] for b in base_features])
@@ -72,15 +52,10 @@ class FeaturePyramidNetwork(Model):
         return [p3, p4, p5, p6, p7]
 
 
-class FeaturePyramidNetworkLite(Model):
+class FeaturePyramidNetworkLite(Head):
     def __init__(self, backbone, out_channels=256):
-        self.base_feature_names = FeaturePyramidNetwork.BASE_FEATURE_NAMES.get(type(backbone).__name__, None)
-        if not self.base_feature_names:
-            raise NotImplementedError(f"FeaturePyramidNetwork: The backbone {type(backbone).__name__} is not supported")
-        base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
-        super(FeaturePyramidNetworkLite, self).__init__([out_channels] * 5)
-
-        self.base_model = backbone
+        super(FeaturePyramidNetworkLite, self).__init__(backbone, [5, 4, 3], [out_channels] * 5)
+        base_output_shapes = Head.get_base_output_shapes(backbone, [5, 4, 3])
 
         self.conv0_0 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=1)
         self.conv0_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1, groups=out_channels)
@@ -105,7 +80,7 @@ class FeaturePyramidNetworkLite(Model):
         self.activation = torch.nn.ReLU()
 
     def forward(self, input):
-        base_features = self.base_model(input, self.base_feature_names)
+        base_features = self.get_base_features(input)
 
         # Coarsest first. C5, C4, C3
         assert [b.shape[2] for b in base_features] == sorted([b.shape[2] for b in base_features])

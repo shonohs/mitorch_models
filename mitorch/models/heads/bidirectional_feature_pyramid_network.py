@@ -3,11 +3,12 @@
 import collections
 import torch
 from .feature_pyramid_network import FeaturePyramidNetwork
-from .model import Model
-from .modules import Add, Conv2dAct
+from .head import Head
+from ..model import Model
+from ..modules import Add, Conv2dAct
 
 
-class BidirectionalFeaturePyramidNetwork(Model):
+class BidirectionalFeaturePyramidNetwork(Head):
     """BiFPN implementation.
        Note that this implementation skipped weighted feature fusion.
     """
@@ -76,11 +77,8 @@ class BidirectionalFeaturePyramidNetwork(Model):
 
 
     def __init__(self, backbone, out_channels=256, num_blocks=1):
-        self.base_feature_names = FeaturePyramidNetwork.BASE_FEATURE_NAMES.get(type(backbone).__name__, None)
-        if not self.base_feature_names:
-            raise NotImplementedError(f"FeaturePyramidNetwork: The backbone {type(backbone).__name__} is not supported")
-        base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
-        super(BidirectionalFeaturePyramidNetwork, self).__init__([out_channels] * 5)
+        super(BidirectionalFeaturePyramidNetwork, self).__init__(backbone, [5, 4, 3], [out_channels] * 5)
+        base_output_shapes = Head.get_base_output_shapes(backbone, [5, 4, 3])
 
         self.base_model = backbone
 
@@ -97,7 +95,7 @@ class BidirectionalFeaturePyramidNetwork(Model):
         self.basic_blocks = torch.nn.Sequential(collections.OrderedDict(basic_blocks))
 
     def forward(self, input):
-        base_features = self.base_model(input, self.base_feature_names)
+        base_features = self.get_base_features(input)
 
         # Coarsest first. C5, C4, C3
         assert [b.shape[2] for b in base_features] == sorted([b.shape[2] for b in base_features])
