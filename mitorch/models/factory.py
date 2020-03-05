@@ -26,6 +26,8 @@ class ModelFactory:
         'ShuffleNetV2': lambda num_classes: Classifier(ShuffleNetV2(), num_classes),
         'SqueezeNet': lambda num_classes: Classifier(SqueezeNet(), num_classes),
         'VGG16': lambda num_classes: Classifier(VGG16(), num_classes),
+
+        # SSDLite
         'EfficientNetB0-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB0()), num_classes),
         'EfficientNetB1-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB1()), num_classes),
         'EfficientNetB2-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB2()), num_classes),
@@ -41,6 +43,7 @@ class ModelFactory:
         'SEResNext101-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(SEResNext101()), num_classes),
         'ShuffleNetV2-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(ShuffleNetV2()), num_classes),
         'VGG16-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(VGG16ForSSD()), num_classes),
+
         'EfficientNetB0-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(EfficientNetB0()), num_classes),
         'EfficientNetB1-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(EfficientNetB1()), num_classes),
         'EfficientNetB2-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(EfficientNetB2()), num_classes),
@@ -49,6 +52,10 @@ class ModelFactory:
         'EfficientNetB5-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(EfficientNetB5()), num_classes),
         'EfficientNetB6-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(EfficientNetB6()), num_classes),
         'EfficientNetB7-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(EfficientNetB7()), num_classes),
+        'MobileNetV2-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV2()), num_classes),
+        'MobileNetV3-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3()), num_classes),
+        'MobileNetV3Small-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3Small()), num_classes),
+
         'EfficientNetB0-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB0()), num_classes),
         'EfficientNetB1-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB1()), num_classes),
         'EfficientNetB2-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB2()), num_classes),
@@ -57,13 +64,26 @@ class ModelFactory:
         'EfficientNetB5-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB5()), num_classes),
         'EfficientNetB6-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB6()), num_classes),
         'EfficientNetB7-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB7()), num_classes),
-
-        'MobileNetV2-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV2()), num_classes),
         'MobileNetV2-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV2()), num_classes),
-        'MobileNetV3-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3()), num_classes),
         'MobileNetV3-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV3()), num_classes),
-        'MobileNetV3Small-FPN-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetwork(MobileNetV3Small()), num_classes),
         'MobileNetV3Small-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV3Small()), num_classes),
+
+        'EfficientNetB0-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB0()), num_classes),
+        'EfficientNetB1-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB1()), num_classes),
+        'EfficientNetB2-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB2()), num_classes),
+        'EfficientNetB3-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB3()), num_classes),
+        'EfficientNetB4-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB4()), num_classes),
+        'EfficientNetB5-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB5()), num_classes),
+        'EfficientNetB6-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB6()), num_classes),
+        'EfficientNetB7-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB7()), num_classes),
+        'MobileNetV2-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(MobileNetV2()), num_classes),
+        'MobileNetV3-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(MobileNetV3()), num_classes),
+        'MobileNetV3Small-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(MobileNetV3Small()), num_classes),
+
+        # RetinaNet
+        'MobileNetV2-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV2()), num_classes),
+        'MobileNetV3-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV3()), num_classes),
+        'MobileNetV3Small-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV3Small()), num_classes),
 
         'EfficientNetB0-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(EfficientNetB0()), num_classes),
         'EfficientNetB1-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(EfficientNetB1()), num_classes),
@@ -73,14 +93,23 @@ class ModelFactory:
         'EfficientNetB5-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(EfficientNetB5()), num_classes),
         'EfficientNetB6-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(EfficientNetB6()), num_classes),
         'EfficientNetB7-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(EfficientNetB7()), num_classes),
-
-        'MobileNetV2-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV2()), num_classes),
         'MobileNetV2-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(MobileNetV2()), num_classes),
-        'MobileNetV3-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV3()), num_classes),
         'MobileNetV3-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(MobileNetV3()), num_classes),
-        'MobileNetV3Small-FPN-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetwork(MobileNetV3Small()), num_classes),
         'MobileNetV3Small-FPNLite-RetinaNet': lambda num_classes: RetinaNet(FeaturePyramidNetworkLite(MobileNetV3Small()), num_classes),
 
+        'EfficientNetB0-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB0()), num_classes),
+        'EfficientNetB1-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB1()), num_classes),
+        'EfficientNetB2-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB2()), num_classes),
+        'EfficientNetB3-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB3()), num_classes),
+        'EfficientNetB4-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB4()), num_classes),
+        'EfficientNetB5-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB5()), num_classes),
+        'EfficientNetB6-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB6()), num_classes),
+        'EfficientNetB7-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(EfficientNetB7()), num_classes),
+        'MobileNetV2-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(MobileNetV2()), num_classes),
+        'MobileNetV3-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(MobileNetV3()), num_classes),
+        'MobileNetV3Small-MnasFPN-RetinaNet': lambda num_classes: RetinaNet(MnasFPN(MobileNetV3Small()), num_classes),
+
+        # RetinaNetLite
         'MobileNetV2-FPN-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetwork(MobileNetV2()), num_classes),
         'MobileNetV3-FPN-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetwork(MobileNetV3()), num_classes),
         'MobileNetV3Small-FPN-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetwork(MobileNetV3Small()), num_classes),
@@ -93,7 +122,6 @@ class ModelFactory:
         'EfficientNetB5-FPNLite-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetworkLite(EfficientNetB5()), num_classes),
         'EfficientNetB6-FPNLite-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetworkLite(EfficientNetB6()), num_classes),
         'EfficientNetB7-FPNLite-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetworkLite(EfficientNetB7()), num_classes),
-
         'MobileNetV2-FPNLite-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetworkLite(MobileNetV2()), num_classes),
         'MobileNetV3-FPNLite-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetworkLite(MobileNetV3()), num_classes),
         'MobileNetV3Small-FPNLite-RetinaNetLite': lambda num_classes: RetinaNetLite(FeaturePyramidNetworkLite(MobileNetV3Small()), num_classes),
@@ -106,7 +134,6 @@ class ModelFactory:
         'EfficientNetB5-MnasFPN-RetinaNetLite': lambda num_classes: RetinaNetLite(MnasFPN(EfficientNetB5()), num_classes),
         'EfficientNetB6-MnasFPN-RetinaNetLite': lambda num_classes: RetinaNetLite(MnasFPN(EfficientNetB6()), num_classes),
         'EfficientNetB7-MnasFPN-RetinaNetLite': lambda num_classes: RetinaNetLite(MnasFPN(EfficientNetB7()), num_classes),
-
         'MobileNetV2-MnasFPN-RetinaNetLite': lambda num_classes: RetinaNetLite(MnasFPN(MobileNetV2()), num_classes),
         'MobileNetV3-MnasFPN-RetinaNetLite': lambda num_classes: RetinaNetLite(MnasFPN(MobileNetV3()), num_classes),
         'MobileNetV3Small-MnasFPN-RetinaNetLite': lambda num_classes: RetinaNetLite(MnasFPN(MobileNetV3Small()), num_classes),
