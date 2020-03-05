@@ -2,7 +2,7 @@
 import collections
 import torch
 from .model import Model
-from .modules import Add, Conv2dBN, Conv2dAct
+from .modules import Add, Conv2dAct, DepthwiseSeparableConv2d
 
 
 class MobileNetV2(Model):
@@ -11,15 +11,12 @@ class MobileNetV2(Model):
             super(MobileNetV2.BasicBlock, self).__init__()
             intermediate_channels = in_channels * expansion_factor
             self.conv0 = Conv2dAct(in_channels, intermediate_channels, kernel_size=1)
-            self.conv1 = Conv2dAct(intermediate_channels, intermediate_channels, kernel_size=3,
-                                      padding=1, stride=stride, groups=intermediate_channels)
-            self.conv2 = Conv2dBN(intermediate_channels, out_channels, kernel_size=1)
+            self.conv1 = DepthwiseSeparableConv2d(intermediate_channels, out_channels, kernel_size=3, stride=stride, padding=1, activation2='none')
             self.residual = Add() if stride == 1 and in_channels == out_channels else None
 
         def forward(self, input):
             x = self.conv0(input)
             x = self.conv1(x)
-            x = self.conv2(x)
             if self.residual:
                 x = self.residual(x, input)
             return x

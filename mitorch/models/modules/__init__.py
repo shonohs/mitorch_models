@@ -2,6 +2,7 @@ from .activation import HardSwish, HardSigmoid
 from .addition import Add
 from .base import ModuleBase
 from .convolution import Conv2dBN, Conv2dAct
+from .depthwise_separable_conv import DepthwiseSeparableConv2d
 from .focal_loss import FocalLoss
 from .linear import LinearAct
 from .mbconv import MBConv

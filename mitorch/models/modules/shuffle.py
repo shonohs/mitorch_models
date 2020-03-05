@@ -8,6 +8,6 @@ class ChannelShuffle(ModuleBase):
 
     def forward(self, input):
         batch_size, channels, height, width = input.data.size()
-        x = input.view(batch_size, self.num_groups, channels // self.num_groups, height, width)
+        x = input.view(-1, self.num_groups, channels // self.num_groups, height, width)
         x = torch.transpose(x, 1, 2).contiguous()
         return x.view(batch_size, channels, height, width)

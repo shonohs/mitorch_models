@@ -20,7 +20,9 @@ class Conv2dAct(ModuleBase):
         x = self.conv(input)
         if self.bn:
             x = self.bn(x)
-        return self.activation(x)
+        if self.activation:
+            x = self.activation(x)
+        return x
 
     def apply_settings(self, kwargs):
         if self.explicit_settings['use_bn'] is None and kwargs.get('use_bn') is not None:
@@ -32,7 +34,7 @@ class Conv2dAct(ModuleBase):
             self._set_activation(kwargs.get('activation'))
 
     def _set_activation(self, act):
-        assert act in ['relu', 'hswish', 'swish', 'relu6']
+        assert act in ['relu', 'hswish', 'swish', 'relu6', 'none']
 
         if act == 'relu':
             self.activation = torch.nn.ReLU(inplace=True)
@@ -42,6 +44,8 @@ class Conv2dAct(ModuleBase):
             self.activation = Swish()
         elif act == 'relu6':
             self.activation = torch.nn.ReLU6(inplace=True)
+        elif act == 'none':
+            self.activation = None
 
 
 class Conv2dBN(torch.nn.Module):
