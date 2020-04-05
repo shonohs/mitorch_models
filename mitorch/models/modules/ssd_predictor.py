@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 from .base import ModuleBase
 from .non_max_suppression import NonMaxSuppression
 
@@ -32,7 +31,7 @@ class SSDPredictor(ModuleBase):
     def predict_class(self, pred_classification):
         # Remove background predictions and adjust the class number
         pred_classification = torch.nn.functional.softmax(pred_classification, dim=-1)
-        return pred_classification[:,:,1:] # Shape: (N, num_prior, num_classes)
+        return pred_classification[:, :, 1:]  # Shape: (N, num_prior, num_classes)
 
     def forward(self, predictions):
         """ Get Bounding boxes.
@@ -46,13 +45,11 @@ class SSDPredictor(ModuleBase):
         pred_location, pred_classification = self.reshape_ssd_predictions(predictions)
         prior_box = self.prior_box(predictions)
 
-        batch_num = len(pred_location)
-
         prior_centers = (prior_box[:, :2] + prior_box[:, 2:]) / 2
         prior_sizes = prior_box[:, 2:] - prior_box[:, :2]
 
-        pred_location_centers = prior_centers + pred_location[:,:,:2] * prior_sizes * 0.1 # Variance: 0.1
-        pred_location_sizes = prior_sizes * torch.exp(pred_location[:,:,2:] * 0.2) # Variance: 0.2
+        pred_location_centers = prior_centers + pred_location[:, :, :2] * prior_sizes * 0.1  # Variance: 0.1
+        pred_location_sizes = prior_sizes * torch.exp(pred_location[:, :, 2:] * 0.2)  # Variance: 0.2
 
         assert len(pred_location_centers.shape) == 3 and pred_location_centers.shape[2] == 2
         assert len(pred_location_sizes.shape) == 3 and pred_location_sizes.shape[2] == 2

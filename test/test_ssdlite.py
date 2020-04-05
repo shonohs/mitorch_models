@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from mitorch.models import *
 
+
 class TestSSDLite(unittest.TestCase):
     def test_efficientnetb0(self):
         self._test_model(EfficientNetB0, 320)
@@ -61,6 +62,7 @@ class TestSSDLite(unittest.TestCase):
         predictions = model.predictor(outputs)
         self.assertIsNotNone(predictions)
         self.assertIsNotNone(model.loss)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -6,7 +6,7 @@ This is an implementation of the figure 2 architecture in the paper.
 import collections
 import torch
 from ..model import Model
-from ..modules import DepthwiseSeparableConv2d
+from ..modules import Conv2dAct, DepthwiseSeparableConv2d
 from .head import Head
 
 
@@ -17,15 +17,18 @@ class MnasFPN(Head):
             assert len(in_scales) == 2
             assert all(s in [3, 4, 5, 6] for s in in_scales)
             assert out_scale in [3, 4, 5, 6]
+
+            self.in_scales = in_scales
+            self.out_scale = out_scale
             self.conv_in0 = torch.nn.Conv2d(in_channels, feature_channels, kernel_size=1)
             self.conv_in1 = torch.nn.Conv2d(in_channels, feature_channels, kernel_size=1)
-            self.conv0 = torch.nn.Conv2d(feature_channels, feature_channels, kernel_size, padding=kernel_size//2, groups=feature_channels)
+            self.conv0 = torch.nn.Conv2d(feature_channels, feature_channels, kernel_size, padding=kernel_size // 2, groups=feature_channels)
             self.conv1 = torch.nn.Conv2d(feature_channels, in_channels, kernel_size=1)
             self.relu = torch.nn.ReLU(inplace=True)
 
         def forward(self, in0, in1, out_shape):
-            in0 = self._size_dependent_ordering(in0, self.conv_in0, in_scales[0], out_scale, out_shape)
-            in1 = self._size_dependent_ordering(in1, self.conv_in1, in_scales[1], out_scale, out_shape)
+            in0 = self._size_dependent_ordering(in0, self.conv_in0, self.in_scales[0], self.out_scale, out_shape)
+            in1 = self._size_dependent_ordering(in1, self.conv_in1, self.in_scales[1], self.out_scale, out_shape)
             return self.conv1(self.conv0(self.relu(in0 + in1)))
 
         @staticmethod
@@ -62,10 +65,15 @@ class MnasFPN(Head):
         base_output_shapes = Head.get_base_output_shapes(base_model, [3, 4, 5])
         self.basic_blocks = torch.nn.Sequential(collections.OrderedDict([
             (f'block{i}', MnasFPN.BasicCell()) for i in range(num_blocks)]))
-        self.conv0 = DepthwiseSeparableConv2d(base_output_shapes[-1], 48, kernel_size=3, padding=1, stride=2)
+
+        self.conv0 = Conv2dAct(base_output_shapes[0], 48, kernel_size=1)
+        self.conv1 = Conv2dAct(base_output_shapes[1], 48, kernel_size=1)
+        self.conv2 = Conv2dAct(base_output_shapes[2], 48, kernel_size=1)
+        self.conv3 = DepthwiseSeparableConv2d(base_output_shapes[2], 48, kernel_size=3, padding=1, stride=2)
 
     def forward(self, input):
         base_features = self.get_base_features(input)
-        base_features += self.conv0(base_features[-1]) # Create scale==6.
+        assert len(base_features) == 3
 
-        return self.basic_blocks(base_features)
+        features = [self.conv0(base_features[0]), self.conv1(base_features[1]), self.conv2(base_features[2]), self.conv3(base_features[2])]
+        return self.basic_blocks(features)

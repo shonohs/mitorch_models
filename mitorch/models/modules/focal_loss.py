@@ -3,7 +3,7 @@ from .ssd_loss import SSDLoss
 
 
 class FocalLoss(SSDLoss):
-    def __init__(self, num_classes, prior_box, alpha = 0.25, gamma = 2):
+    def __init__(self, num_classes, prior_box, alpha=0.25, gamma=2):
         super(FocalLoss, self).__init__(num_classes, prior_box)
         self.negative_iou_threshold = 0.4
         self.positive_iou_threshold = 0.5
@@ -42,7 +42,7 @@ class FocalLoss(SSDLoss):
 
         # If y == 0, l = -log(1-sigmoid(x)). if y == 1, l = -log(sigmoid(x))
         ce = torch.nn.functional.binary_cross_entropy_with_logits(pred_classification, target, reduction='none')
-        pt = torch.exp(-ce) # if y == 0, pt = 1 - sigmoid(x). if y == 1, pt = sigmoid(x)
+        pt = torch.exp(-ce)  # if y == 0, pt = 1 - sigmoid(x). if y == 1, pt = sigmoid(x)
 
         assert ce.shape[0] == target.shape[0] and ce.shape[1] == target.shape[1]
         assert pt.shape[0] == target.shape[0] and pt.shape[1] == target.shape[1]
@@ -60,5 +60,5 @@ class FocalLoss(SSDLoss):
         target_shape = (target_classification.shape[0], num_classes + 1)
         target = torch.zeros(target_shape, dtype=dtype, layout=layout, device=device)
         target.scatter_(1, target_classification.unsqueeze(-1), 1)
-        target = target[:,1:]
+        target = target[:, 1:]
         return target

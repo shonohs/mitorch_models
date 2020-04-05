@@ -3,7 +3,7 @@ from .base import ModuleBase
 
 
 class NonMaxSuppression(ModuleBase):
-    def __init__(self, max_detections = 10):
+    def __init__(self, max_detections=10):
         super(NonMaxSuppression, self).__init__()
         self.max_detections = 10
         self.iou_threshold = 0.45
@@ -36,7 +36,7 @@ class NonMaxSuppression(ModuleBase):
         assert len(max_classes.shape) == 1
         assert len(max_probs) == len(max_classes)
 
-        areas = (boxes[:,2] - boxes[:,0]) * (boxes[:,3] - boxes[:,1])
+        areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
 
         selected_boxes = []
         selected_classes = []
@@ -54,14 +54,14 @@ class NonMaxSuppression(ModuleBase):
             selected_probs.append(float(max_probs[i]))
 
             box = boxes[i]
-            other_indices = torch.cat((torch.arange(i), torch.arange(i+1, len(boxes))))
+            other_indices = torch.cat((torch.arange(i), torch.arange(i + 1, len(boxes))))
             other_boxes = boxes[other_indices]
 
             # Get overlap between the 'box' and 'other_boxes'
-            x1 = torch.max(box[0], other_boxes[:,0])
-            y1 = torch.max(box[1], other_boxes[:,1])
-            x2 = torch.min(box[2], other_boxes[:,2])
-            y2 = torch.min(box[3], other_boxes[:,3])
+            x1 = torch.max(box[0], other_boxes[:, 0])
+            y1 = torch.max(box[1], other_boxes[:, 1])
+            x2 = torch.min(box[2], other_boxes[:, 2])
+            y2 = torch.min(box[3], other_boxes[:, 3])
             w = torch.clamp(x2 - x1, min=0, max=1)
             h = torch.clamp(y2 - y1, min=0, max=1)
 
@@ -70,13 +70,13 @@ class NonMaxSuppression(ModuleBase):
             iou = overlap_area / (areas[i] + areas[other_indices] - overlap_area)
 
             # Find the overlapping predictions
-            #overlapping_indices = torch.squeeze(other_indices[torch.nonzero(iou > self.iou_threshold)])
+            # overlapping_indices = torch.squeeze(other_indices[torch.nonzero(iou > self.iou_threshold)])
             overlapping_indices = other_indices[torch.nonzero(iou > self.iou_threshold)].view(-1)
-            overlapping_indices = torch.cat((overlapping_indices, torch.tensor([i], device=overlapping_indices.device))) # Append i to the indices.
+            overlapping_indices = torch.cat((overlapping_indices, torch.tensor([i], device=overlapping_indices.device)))  # Append i to the indices.
 
             # Set the probability of overlapping predictions to zero, and udpate max_probs and max_classes.
             # This is assuming multi-label predictions.
-            scores[overlapping_indices,max_classes[i]] = 0
+            scores[overlapping_indices, max_classes[i]] = 0
             max_probs[overlapping_indices], max_classes[overlapping_indices] = torch.max(scores[overlapping_indices], dim=1)
 
         assert len(selected_boxes) == len(selected_classes) and len(selected_boxes) == len(selected_probs)

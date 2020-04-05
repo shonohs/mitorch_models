@@ -10,15 +10,15 @@ class EfficientNet(Model):
     BASIC_CONFIG = [
         # Expansion factor, kernel_size, in channels, out channels, stride, #layers
         [1, 3, 32, 16, 1, 1],
-        [6, 3, 16, 24, 2, 2], # 112x112 -> 56x56
-        [6, 5, 24, 40, 2, 2], # 56x56 -> 28x28
-        [6, 3, 40, 80, 2, 3], # 28x28 -> 14x14
+        [6, 3, 16, 24, 2, 2],  # 112x112 -> 56x56
+        [6, 5, 24, 40, 2, 2],  # 56x56 -> 28x28
+        [6, 3, 40, 80, 2, 3],  # 28x28 -> 14x14
         [6, 5, 80, 112, 1, 3],
         [6, 5, 112, 192, 2, 4],
         [6, 3, 192, 320, 1, 1]
     ]
 
-    def __init__(self, width_multiplier = 1, depth_multiplier = 1, dropout_ratio = 0.2):
+    def __init__(self, width_multiplier=1, depth_multiplier=1, dropout_ratio=0.2):
         m = width_multiplier
         super(EfficientNet, self).__init__(round(1280 * m / 8) * 8)
 
@@ -28,12 +28,11 @@ class EfficientNet(Model):
         stages = [s for i in range(len(self.BASIC_CONFIG)) for s in self._make_stage(i)]
 
         self.features = torch.nn.Sequential(collections.OrderedDict([('conv0', Conv2dAct(3, round(32 * m / 8) * 8, kernel_size=3, padding=1, stride=2, activation='swish'))]
-                                                                   + stages
-                                                                   + [('conv1', Conv2dAct(round(320 * m / 8) * 8, round(1280 * m / 8) * 8, kernel_size=1, activation='swish')),
-                                                                      ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
-                                                                      ('dropout0', torch.nn.Dropout(dropout_ratio)),
-                                                                      ('flatten', torch.nn.Flatten())
-                                                                   ]))
+                                                                    + stages
+                                                                    + [('conv1', Conv2dAct(round(320 * m / 8) * 8, round(1280 * m / 8) * 8, kernel_size=1, activation='swish')),
+                                                                       ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
+                                                                       ('dropout0', torch.nn.Dropout(dropout_ratio)),
+                                                                       ('flatten', torch.nn.Flatten())]))
 
     def _make_stage(self, index):
         expansion_factor, kernel_size, in_planes, out_planes, stride, num_layers = self.BASIC_CONFIG[index]
@@ -55,41 +54,48 @@ class EfficientNetB0(EfficientNet):
 
 class EfficientNetB1(EfficientNet):
     INPUT_SIZE = 240
+
     def __init__(self):
         super(EfficientNetB1, self).__init__(1.0, 1.1, 0.2)
 
 
 class EfficientNetB2(EfficientNet):
     INPUT_SIZE = 260
+
     def __init__(self):
         super(EfficientNetB2, self).__init__(1.1, 1.2, 0.3)
 
 
 class EfficientNetB3(EfficientNet):
     INPUT_SIZE = 300
+
     def __init__(self):
         super(EfficientNetB3, self).__init__(1.2, 1.4, 0.3)
 
 
 class EfficientNetB4(EfficientNet):
     INPUT_SIZE = 380
+
     def __init__(self):
         super(EfficientNetB4, self).__init__(1.4, 1.8, 0.4)
 
 
 class EfficientNetB5(EfficientNet):
     INPUT_SIZE = 456
+
     def __init__(self):
         super(EfficientNetB5, self).__init__(1.6, 2.2, 0.4)
 
 
 class EfficientNetB6(EfficientNet):
     INPUT_SIZE = 528
+
     def __init__(self):
         super(EfficientNetB6, self).__init__(1.8, 2.6, 0.5)
 
 
 class EfficientNetB7(EfficientNet):
     INPUT_SIZE = 600
+
     def __init__(self):
         super(EfficientNetB7, self).__init__(2.0, 3.1, 0.5)

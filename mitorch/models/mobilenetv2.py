@@ -21,8 +21,8 @@ class MobileNetV2(Model):
                 x = self.residual(x, input)
             return x
 
-    def __init__(self, width_multiplier = 1, activation='relu6'):
-        super(MobileNetV2, self).__init__(output_dim = 1280, activation=activation)
+    def __init__(self, width_multiplier=1, activation='relu6'):
+        super(MobileNetV2, self).__init__(output_dim=1280, activation=activation)
 
         m = width_multiplier
         self.features = torch.nn.Sequential(collections.OrderedDict([

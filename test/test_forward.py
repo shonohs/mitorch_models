@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from mitorch.models import *
 
+
 class TestForward(unittest.TestCase):
     def test_efficientnetb0(self):
         self._test_model(EfficientNetB0(), EfficientNetB0.INPUT_SIZE)
@@ -109,6 +110,7 @@ class TestForward(unittest.TestCase):
         predictions = model.predictor(outputs)
         self.assertIsNotNone(predictions)
         self.assertIsNotNone(model.loss)
+
 
 if __name__ == '__main__':
     unittest.main()

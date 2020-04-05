@@ -23,9 +23,9 @@ class RetinaNet(Model):
 
         def reset_parameters(self):
             pi = 0.01
-            self.conv_cls[-1].bias.data.fill_(-math.log((1-pi)/pi))
+            self.conv_cls[-1].bias.data.fill_(-math.log((1 - pi) / pi))
 
-    def __init__(self, backbone, num_classes, prior_box = None, num_blocks = 4, detection_block_class = None):
+    def __init__(self, backbone, num_classes, prior_box=None, num_blocks=4, detection_block_class=None):
         super(RetinaNet, self).__init__(None)
         self.base_model = backbone
 

@@ -6,7 +6,7 @@ from .modules import Conv2dAct, MBConv
 
 
 class MobileNetV3(Model):
-    def __init__(self, width_multiplier = 1, activation = 'relu6', dropout_ratio=0.2):
+    def __init__(self, width_multiplier=1, activation='relu6', dropout_ratio=0.2):
         m = width_multiplier
         super(MobileNetV3, self).__init__(int(1280 * m), activation=activation)
 
@@ -36,7 +36,7 @@ class MobileNetV3(Model):
 
 
 class MobileNetV3Small(Model):
-    def __init__(self, width_multiplier = 1, activation='relu6', dropout_ratio=0.2):
+    def __init__(self, width_multiplier=1, activation='relu6', dropout_ratio=0.2):
         m = width_multiplier
         super(MobileNetV3Small, self).__init__(int(1024 * m), activation=activation)
 

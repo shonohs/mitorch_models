@@ -4,8 +4,10 @@ from .modules.base import ModuleBase
 
 
 class Model(torch.nn.Module):
-    MAJOR_VERSION = 0 # Major updates where the results can be changed.
-    MINOR_VERSION = 0 # Minor updates that doesn't have impact on model outputs. e.g. module name changes.
+    # (Major version, Minor version).
+    # Major version updates can change the training results.
+    # Minor version updates doesn't have impact on model outputs. e.g. module name changes.
+    VERSION = (0, 0)
 
     def __init__(self, output_dim, **kwargs):
         super(Model, self).__init__()
@@ -26,7 +28,17 @@ class Model(torch.nn.Module):
         outputs = self.forward(input, output_names)
         return [o.shape[1] for o in outputs]
 
-    def forward(self, input, output_names = None):
+    @property
+    def version(self):
+        versions = {}
+        for m in self.modules():
+            if isinstance(m, (Model, ModuleBase)):
+                module_name = type(m).__name__
+                module_version = m.VERSION
+                versions[module_name] = module_version
+        return versions
+
+    def forward(self, input, output_names=None):
         if not output_names:
             if hasattr(self, 'features'):
                 return self.features(input)

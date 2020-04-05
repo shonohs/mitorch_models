@@ -1,6 +1,7 @@
 import torch
 from .base import ModuleBase
 
+
 class ChannelShuffle(ModuleBase):
     def __init__(self, num_groups):
         super(ChannelShuffle, self).__init__()

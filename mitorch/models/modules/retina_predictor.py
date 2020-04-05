@@ -1,6 +1,7 @@
 import torch
 from .ssd_predictor import SSDPredictor
 
+
 class RetinaPredictor(SSDPredictor):
     def __init__(self, num_classes, prior_box):
         super(RetinaPredictor, self).__init__(num_classes, prior_box)

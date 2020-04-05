@@ -1,5 +1,4 @@
 import math
-import torch
 from .prior_box import PriorBox
 
 

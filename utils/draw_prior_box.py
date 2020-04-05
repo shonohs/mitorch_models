@@ -4,10 +4,12 @@ import sys
 import torch
 import PIL.Image
 import PIL.ImageDraw
-import mitorch.models.modules
+import mitorch.models.modules  # noqa: F401
+
 
 class BoundingBoxDrawer(object):
     COLOR_CODES = ["black", "brown", "red", "orange", "yellow", "green", "blue", "violet", "grey", "white"]
+
     def __init__(self, image):
         self.width, self.height = image.size
         self.draw = PIL.ImageDraw.Draw(image)
@@ -16,7 +18,7 @@ class BoundingBoxDrawer(object):
         color = self.COLOR_CODES[class_id % len(self.COLOR_CODES)]
         self.draw_rectangle(x0, y0, x1, y1, color)
 
-    def draw_rectangle(self, x0, y0, x1, y1, color = "red"):
+    def draw_rectangle(self, x0, y0, x1, y1, color="red"):
         self.draw.rectangle(((x0 * self.width, y0 * self.height), (x1 * self.width, y1 * self.height)), outline=color)
 
 
@@ -32,6 +34,7 @@ def draw_prior_box(prior_box, size, output_filename, show_random):
 
     image.save(output_filename)
     print(f"{len(draw_boxes)} out of {len(boxes)} boxes are drawn")
+
 
 def main():
     parser = argparse.ArgumentParser("Draw prior boxes on an image")

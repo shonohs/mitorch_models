@@ -4,6 +4,7 @@ import torch
 from .model import Model
 from .modules import Add, Conv2dAct, ChannelShuffle, Conv2dBN
 
+
 class ShuffleNet(Model):
     FIRST_STAGE_CHANNELS = {1: 144, 2: 200, 3: 240, 4: 272, 8: 384}
 
@@ -55,7 +56,7 @@ class ShuffleNet(Model):
             x = torch.cat((shortcut, x), 1)
             return self.activation(x)
 
-    def __init__(self, width_multiplier = 1, num_groups = 3, num_blocks = [4, 8, 4]):
+    def __init__(self, width_multiplier=1, num_groups=3, num_blocks=[4, 8, 4]):
         assert num_groups in ShuffleNet.FIRST_STAGE_CHANNELS, "Unexpected number of groups"
         first_stage_channels = int(ShuffleNet.FIRST_STAGE_CHANNELS[num_groups] * width_multiplier)
         feature_planes = first_stage_channels * (2 ** (len(num_blocks) - 1))
@@ -73,11 +74,10 @@ class ShuffleNet(Model):
                                                                      ('pool0', torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1))]
                                                                     + blocks
                                                                     + [('pool1', torch.nn.AdaptiveAvgPool2d(1)),
-                                                                       ('flatten', torch.nn.Flatten())
-                                                                    ]))
+                                                                       ('flatten', torch.nn.Flatten())]))
 
     def _make_stage(self, in_channels, out_channels, num_blocks, num_groups, index, skip_first_group_conv=False):
         blocks = [(f'block{index}_0', ShuffleNet.DownsampleBasicBlock(in_channels, out_channels, num_groups, stride=2, skip_first_group_conv=skip_first_group_conv))]
-        for i in range(num_blocks-1):
+        for i in range(num_blocks - 1):
             blocks.append((f'block{index}_{i+1}', ShuffleNet.BasicBlock(out_channels, out_channels, num_groups)))
         return blocks

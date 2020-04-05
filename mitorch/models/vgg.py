@@ -4,6 +4,7 @@ import torch
 from .model import Model
 from .modules import Conv2dAct, LinearAct
 
+
 class VGG(Model):
     INPUT_SIZE = 224
 

@@ -25,5 +25,6 @@ class TestRetinaNet(unittest.TestCase):
         self.assertIsNotNone(predictions)
         self.assertIsNotNone(loss)
 
+
 if __name__ == '__main__':
     unittest.main()

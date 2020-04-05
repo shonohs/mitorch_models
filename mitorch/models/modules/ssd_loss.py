@@ -1,5 +1,4 @@
 import math
-import numpy as np
 import torch
 from .base import ModuleBase
 
@@ -12,8 +11,7 @@ class SSDLoss(ModuleBase):
         self.neg_pos_ratio = 3
         self.num_classes = num_classes
         self.prior_box = prior_box
-        self.num_classifier = num_classes + 1 # SSD has background class.
-
+        self.num_classifier = num_classes + 1  # SSD has background class.
 
     def hard_negative_mining(self, pred_classification, target_classification, neg_pos_ratio):
         """ Hard negative mining. Returns the indices for the selected entries.
@@ -29,8 +27,8 @@ class SSDLoss(ModuleBase):
         num_neg = num_pos * neg_pos_ratio
 
         with torch.no_grad():
-            negative_scores = torch.nn.functional.log_softmax(pred_classification, dim=2)[:,:,0] # (N, num_prior)
-            negative_scores[pos_mask] = math.inf # Exclude positive boxes.
+            negative_scores = torch.nn.functional.log_softmax(pred_classification, dim=2)[:, :, 0]  # (N, num_prior)
+            negative_scores[pos_mask] = math.inf  # Exclude positive boxes.
 
             # Get Top-k mask
             _, indexes = negative_scores.sort(dim=1)
@@ -47,14 +45,14 @@ class SSDLoss(ModuleBase):
         Return: iou (N0, N1)
         """
         # Get Intersection
-        max_xy = torch.min(box0[:,2:].unsqueeze(1).expand(box0.size(0), box1.size(0), 2), box1[:, 2:].unsqueeze(0).expand(box0.size(0), box1.size(0), 2))
-        min_xy = torch.max(box0[:,:2].unsqueeze(1).expand(box0.size(0), box1.size(0), 2), box1[:, :2].unsqueeze(0).expand(box0.size(0), box1.size(0), 2))
+        max_xy = torch.min(box0[:, 2:].unsqueeze(1).expand(box0.size(0), box1.size(0), 2), box1[:, 2:].unsqueeze(0).expand(box0.size(0), box1.size(0), 2))
+        min_xy = torch.max(box0[:, :2].unsqueeze(1).expand(box0.size(0), box1.size(0), 2), box1[:, :2].unsqueeze(0).expand(box0.size(0), box1.size(0), 2))
         intersection = torch.clamp((max_xy - min_xy), min=0)
 
-        intersection_areas = intersection[:,:,0] * intersection[:,:,1]
+        intersection_areas = intersection[:, :, 0] * intersection[:, :, 1]
 
-        box0_areas = ((box0[:,2] - box0[:,0]) * (box0[:,3] - box0[:,1])).unsqueeze(1).expand_as(intersection_areas)
-        box1_areas = ((box1[:,2] - box1[:,0]) * (box1[:,3] - box1[:,1])).unsqueeze(0).expand_as(intersection_areas)
+        box0_areas = ((box0[:, 2] - box0[:, 0]) * (box0[:, 3] - box0[:, 1])).unsqueeze(1).expand_as(intersection_areas)
+        box1_areas = ((box1[:, 2] - box1[:, 0]) * (box1[:, 3] - box1[:, 1])).unsqueeze(0).expand_as(intersection_areas)
         union_areas = box0_areas + box1_areas - intersection_areas
         return intersection_areas / union_areas
 
@@ -79,37 +77,37 @@ class SSDLoss(ModuleBase):
 
         # Get overlaps between target and prior bounding boxes.
         # ious: shape (num_labels, num_priors)
-        ious = self.iou(target[:,1:], priors)
+        ious = self.iou(target[:, 1:], priors)
 
         # Best matching prior for each ground truth
-        best_prior_overlap, best_prior_index = ious.max(1) # Shape: (num_labels,)
+        best_prior_overlap, best_prior_index = ious.max(1)  # Shape: (num_labels,)
         assert len(best_prior_overlap.shape) == 1 and best_prior_overlap.shape[0] == target.shape[0]
 
         # Best matching ground truth for each prior
-        best_target_overlap, best_target_index = ious.max(0) # Shape: (num_priors,)
+        best_target_overlap, best_target_index = ious.max(0)  # Shape: (num_priors,)
         assert len(best_target_overlap.shape) == 1 and best_target_overlap.shape[0] == priors.shape[0]
 
         # Make sure the best_prior_index will be bigger than the threshold. The threshold should be less than 1.0.
         best_target_overlap.index_fill_(0, best_prior_index, 1.0)
         best_target_index[best_prior_index] = torch.tensor(range(len(best_prior_index)), device=target.device)
 
-        matched_targets = target[best_target_index, :] # Shape: (num_priors, 5)
-        target_labels = matched_targets[:,0] + 1 # Increment to make the label 0 background.
-        target_labels[best_target_overlap < negative_iou_threshold] = 0 # If IOU is too small, set it as background.
+        matched_targets = target[best_target_index, :]  # Shape: (num_priors, 5)
+        target_labels = matched_targets[:, 0] + 1  # Increment to make the label 0 background.
+        target_labels[best_target_overlap < negative_iou_threshold] = 0  # If IOU is too small, set it as background.
         # If IOU is between negative_iou_threshold and positive_iou_threshold, ignore it.
         target_labels[(best_target_overlap >= negative_iou_threshold) & (best_target_overlap < positive_iou_threshold)] = -1
 
-        priors_center_xy = (priors[:,:2] + priors[:,2:]) / 2
-        priors_wh = priors[:,2:] - priors[:,:2]
+        priors_center_xy = (priors[:, :2] + priors[:, 2:]) / 2
+        priors_wh = priors[:, 2:] - priors[:, :2]
 
         # Find the difference between prior and matched ground truths.
         # If there is no matched ground truths, the result is random.
-        diff_center_xy = (matched_targets[:,1:3] + matched_targets[:,3:]) / 2 - priors_center_xy
-        diff_center_xy /= priors_wh * 0.1 # Variance: 0.1
-        diff_wh = (matched_targets[:,3:] - matched_targets[:,1:3]) / priors_wh
-        diff_wh = torch.log(diff_wh) / 0.2 # Variance: 0.2
+        diff_center_xy = (matched_targets[:, 1:3] + matched_targets[:, 3:]) / 2 - priors_center_xy
+        diff_center_xy /= priors_wh * 0.1  # Variance: 0.1
+        diff_wh = (matched_targets[:, 3:] - matched_targets[:, 1:3]) / priors_wh
+        diff_wh = torch.log(diff_wh) / 0.2  # Variance: 0.2
 
-        target_location = torch.cat([diff_center_xy, diff_wh], 1) # Shape: (N, num_priors, 4)
+        target_location = torch.cat([diff_center_xy, diff_wh], 1)  # Shape: (N, num_priors, 4)
 
         assert target_location.size()[0] == target_labels.size()[0] and target_location.size()[1] == 4
 
@@ -133,7 +131,7 @@ class SSDLoss(ModuleBase):
 
     def loss_classification(self, pred_classification, target_classification):
         # Hard negative mining
-        mask = self.hard_negative_mining(pred_classification, target_classification, self.neg_pos_ratio) # Shape: (N, num_prior)
+        mask = self.hard_negative_mining(pred_classification, target_classification, self.neg_pos_ratio)  # Shape: (N, num_prior)
         # Use 'sum' reduction since we divide the loss by num_positive later.
         loss_classification = torch.nn.functional.cross_entropy(pred_classification[mask], target_classification[mask], reduction='sum')
         return loss_classification
@@ -149,7 +147,6 @@ class SSDLoss(ModuleBase):
             pred_location.append(loc)
             pred_classification.append(cls)
         return (torch.cat(pred_location, dim=1), torch.cat(pred_classification, dim=1))
-
 
     def forward(self, predictions, targets):
         """
@@ -180,7 +177,7 @@ class SSDLoss(ModuleBase):
         assert len(target_location.shape) == 3 and target_location.shape[2] == 4
         assert len(target_classification.shape) == 2 and target_classification.shape[0] == batch_num
 
-        positive_priors_index = target_classification > 0 # Shape: (N, num_prior)
+        positive_priors_index = target_classification > 0  # Shape: (N, num_prior)
         loss_location = torch.nn.functional.smooth_l1_loss(pred_location[positive_priors_index].view(-1, 4), target_location[positive_priors_index].view(-1, 4), reduction='sum')
         loss_classification = self.loss_classification(pred_classification, target_classification)
 

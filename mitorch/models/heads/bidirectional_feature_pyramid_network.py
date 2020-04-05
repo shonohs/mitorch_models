@@ -2,7 +2,6 @@
 """
 import collections
 import torch
-from .feature_pyramid_network import FeaturePyramidNetwork
 from .head import Head
 from ..model import Model
 from ..modules import Add, Conv2dAct
@@ -18,26 +17,25 @@ class BidirectionalFeaturePyramidNetwork(Head):
 
             assert len(input_channels) == 5
 
-            self.conv0_0 = torch.nn.Conv2d(input_channels[0], out_channels, kernel_size=1) # P_7
-            self.conv0_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1) # N_7
+            self.conv0_0 = torch.nn.Conv2d(input_channels[0], out_channels, kernel_size=1)  # P_7
+            self.conv0_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)  # N_7
 
-            self.conv1_0 = torch.nn.Conv2d(input_channels[1], out_channels, kernel_size=1) # P_6
+            self.conv1_0 = torch.nn.Conv2d(input_channels[1], out_channels, kernel_size=1)  # P_6
             self.conv1_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)
-            self.conv1_2 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1) # N_6
+            self.conv1_2 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)  # N_6
 
-            self.conv2_0 = torch.nn.Conv2d(input_channels[2], out_channels, kernel_size=1) # P_5
+            self.conv2_0 = torch.nn.Conv2d(input_channels[2], out_channels, kernel_size=1)  # P_5
             self.conv2_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)
-            self.conv2_2 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1) # N_5
+            self.conv2_2 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)  # N_5
 
-            self.conv3_0 = torch.nn.Conv2d(input_channels[3], out_channels, kernel_size=1) # P_4
+            self.conv3_0 = torch.nn.Conv2d(input_channels[3], out_channels, kernel_size=1)  # P_4
             self.conv3_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)
-            self.conv3_2 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1) # N_4
+            self.conv3_2 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)  # N_4
 
-            self.conv4_0 = torch.nn.Conv2d(input_channels[4], out_channels, kernel_size=1) # P_3
-            self.conv4_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1) # N_3
+            self.conv4_0 = torch.nn.Conv2d(input_channels[4], out_channels, kernel_size=1)  # P_3
+            self.conv4_1 = Conv2dAct(out_channels, out_channels, kernel_size=3, padding=1)  # N_3
 
             self.add = Add()
-
 
         def forward(self, input):
             # TODO: Implement weighted feature fusion.
@@ -49,32 +47,31 @@ class BidirectionalFeaturePyramidNetwork(Head):
             p4 = self.conv3_0(input[3])
             p3 = self.conv4_0(input[4])
 
-            n6 = self.add(p6, torch.nn.functional.interpolate(p7, size=p6.shape[2:])) # Upsample 2x
+            n6 = self.add(p6, torch.nn.functional.interpolate(p7, size=p6.shape[2:]))  # Upsample 2x
             n6 = self.conv1_1(n6)
 
-            n5 = self.add(p5, torch.nn.functional.interpolate(n6, size=p5.shape[2:])) # Upsample 2x
+            n5 = self.add(p5, torch.nn.functional.interpolate(n6, size=p5.shape[2:]))  # Upsample 2x
             n5 = self.conv2_1(n5)
 
-            n4 = self.add(p4, torch.nn.functional.interpolate(n5, size=p4.shape[2:])) # Upsample 2x
+            n4 = self.add(p4, torch.nn.functional.interpolate(n5, size=p4.shape[2:]))  # Upsample 2x
             n4 = self.conv3_1(n4)
 
-            n3 = self.add(p3, torch.nn.functional.interpolate(n4, size=p3.shape[2:])) # Upsample 2x
+            n3 = self.add(p3, torch.nn.functional.interpolate(n4, size=p3.shape[2:]))  # Upsample 2x
             n3 = self.conv4_1(n3)
 
-            n4 = self.add(p4, n4, torch.nn.functional.interpolate(n3, size=p4.shape[2:])) # Downsample 2x
+            n4 = self.add(p4, n4, torch.nn.functional.interpolate(n3, size=p4.shape[2:]))  # Downsample 2x
             n4 = self.conv3_2(n4)
 
-            n5 = self.add(p5, n5, torch.nn.functional.interpolate(n4, size=p5.shape[2:])) # Downsample 2x
+            n5 = self.add(p5, n5, torch.nn.functional.interpolate(n4, size=p5.shape[2:]))  # Downsample 2x
             n5 = self.conv2_2(n5)
 
-            n6 = self.add(p6, n6, torch.nn.functional.interpolate(n5, size=p6.shape[2:])) # Downsample 2x
+            n6 = self.add(p6, n6, torch.nn.functional.interpolate(n5, size=p6.shape[2:]))  # Downsample 2x
             n6 = self.conv1_2(n6)
 
-            n7 = self.add(p7, torch.nn.functional.interpolate(n6, size=p7.shape[2:])) # Downsample 2x
+            n7 = self.add(p7, torch.nn.functional.interpolate(n6, size=p7.shape[2:]))  # Downsample 2x
             n7 = self.conv0_1(n7)
 
             return [n7, n6, n5, n4, n3]
-
 
     def __init__(self, backbone, out_channels=256, num_blocks=1):
         super(BidirectionalFeaturePyramidNetwork, self).__init__(backbone, [5, 4, 3], [out_channels] * 5)
@@ -82,8 +79,8 @@ class BidirectionalFeaturePyramidNetwork(Head):
 
         self.base_model = backbone
 
-        self.conv0 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=3, padding=1, stride=2) # P_6
-        self.conv1 = torch.nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=2) # P_7
+        self.conv0 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=3, padding=1, stride=2)  # P_6
+        self.conv1 = torch.nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=2)  # P_7
         self.activation = torch.nn.ReLU()
 
         basic_blocks = []

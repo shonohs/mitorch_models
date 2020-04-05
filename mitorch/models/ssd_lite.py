@@ -15,7 +15,7 @@ class SSDLite(Model):
             cls = self.conv_cls(input)
             return loc, cls
 
-    def __init__(self, backbone, num_classes, prior_box = None):
+    def __init__(self, backbone, num_classes, prior_box=None):
         super(SSDLite, self).__init__(None, use_bn=True)
         self.base_model = backbone
 

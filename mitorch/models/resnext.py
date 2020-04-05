@@ -26,8 +26,7 @@ class ResNext(Model):
             x = self.add(x, self.conv_shortcut(input) if self.conv_shortcut else input)
             return self.activation(x)
 
-
-    def __init__(self, num_blocks = [3,4,6,3], cardinality=32, bottleneck_width=4):
+    def __init__(self, num_blocks=[3, 4, 6, 3], cardinality=32, bottleneck_width=4):
         in_channels = 64
         out_channels = bottleneck_width * cardinality * 2
         feature_channels = out_channels * (2 ** (len(num_blocks) - 1))
@@ -45,32 +44,30 @@ class ResNext(Model):
                                                                      ('pool0', torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1))]
                                                                     + blocks
                                                                     + [('pool1', torch.nn.AdaptiveAvgPool2d(1)),
-                                                                       ('flatten', torch.nn.Flatten())
-                                                                    ]))
-
+                                                                       ('flatten', torch.nn.Flatten())]))
 
     def _make_stage(self, in_channels, out_channels, num_blocks, first_block_stride, cardinality, index):
         blocks = [(f'block{index}_0', ResNext.BasicBlock(in_channels, out_channels, cardinality, first_block_stride))]
-        for i in range(num_blocks-1):
+        for i in range(num_blocks - 1):
             blocks.append((f'block{index}_{i+1}', ResNext.BasicBlock(out_channels, out_channels, cardinality)))
         return blocks
 
 
 class ResNext14(ResNext):
     def __init__(self):
-        super(ResNext14, self).__init__([1,1,1,1], cardinality=32, bottleneck_width=4)
+        super(ResNext14, self).__init__([1, 1, 1, 1], cardinality=32, bottleneck_width=4)
 
 
 class ResNext26(ResNext):
     def __init__(self):
-        super(ResNext26, self).__init__([2,2,2,2], cardinality=32, bottleneck_width=4)
+        super(ResNext26, self).__init__([2, 2, 2, 2], cardinality=32, bottleneck_width=4)
 
 
 class ResNext50(ResNext):
     def __init__(self):
-        super(ResNext50, self).__init__([3,4,6,3], cardinality=32, bottleneck_width=4)
+        super(ResNext50, self).__init__([3, 4, 6, 3], cardinality=32, bottleneck_width=4)
 
 
 class ResNext101(ResNext):
     def __init__(self):
-        super(ResNext101, self).__init__([3,4,23,3], cardinality=32, bottleneck_width=4)
+        super(ResNext101, self).__init__([3, 4, 23, 3], cardinality=32, bottleneck_width=4)

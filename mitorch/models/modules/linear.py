@@ -1,6 +1,7 @@
 import torch
 from .base import ModuleBase
 
+
 class LinearAct(ModuleBase):
     def __init__(self, in_channels, out_channels):
         super(LinearAct, self).__init__()

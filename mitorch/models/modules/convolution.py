@@ -11,7 +11,14 @@ class Conv2dAct(ModuleBase):
         use_bn = use_bn if use_bn is not None else True
         activation = activation if activation is not None else 'relu'
 
+        self.in_channels = in_channels
         self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.dilation = dilation
+        self.groups = groups
+
         self.conv = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias=(not use_bn))
         self.bn = torch.nn.BatchNorm2d(out_channels) if use_bn else None
         self._set_activation(activation)
@@ -27,8 +34,8 @@ class Conv2dAct(ModuleBase):
     def apply_settings(self, kwargs):
         if self.explicit_settings['use_bn'] is None and kwargs.get('use_bn') is not None:
             use_bn = kwargs.get('use_bn')
+            self.conv = torch.nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, bias=(not use_bn))
             self.bn = torch.nn.BatchNorm2d(self.out_channels) if use_bn else None
-            self.conv = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias=(not use_bn))
 
         if self.explicit_settings['activation'] is None and kwargs.get('activation') is not None:
             self._set_activation(kwargs.get('activation'))

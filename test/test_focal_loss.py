@@ -15,7 +15,6 @@ class TestFocalLoss(unittest.TestCase):
         result = loss.loss_classification(pred_classification, target_classification)
         self.assertEqual(result, 0)
 
-
         # batch_size=8
         pred_classification = torch.zeros((8, 100, 5))
         target_classification = torch.zeros((8, 100), dtype=torch.long)
@@ -39,8 +38,8 @@ class TestFocalLoss(unittest.TestCase):
         # both predicted and target is all background classes
         pred_classification = torch.zeros((1, 10, 5))
         target_classification = torch.ones((1, 10), dtype=torch.long)
-        pred_classification[:,:,1:] = -1000
-        pred_classification[:,:,0] = 1000
+        pred_classification[:, :, 1:] = -1000
+        pred_classification[:, :, 0] = 1000
 
         result = loss.loss_classification(pred_classification, target_classification)
         self.assertEqual(result, 0)
@@ -48,8 +47,8 @@ class TestFocalLoss(unittest.TestCase):
         # batch_size=8
         pred_classification = torch.zeros((8, 100, 5))
         target_classification = torch.ones((8, 100), dtype=torch.long)
-        pred_classification[:,:,1:] = -1000
-        pred_classification[:,:,0] = 1000
+        pred_classification[:, :, 1:] = -1000
+        pred_classification[:, :, 0] = 1000
 
         result = loss.loss_classification(pred_classification, target_classification)
         self.assertEqual(result, 0)
@@ -66,7 +65,7 @@ class TestFocalLoss(unittest.TestCase):
     def test_one_hot(self):
         target = torch.tensor([0, 1, 2, 3])
         result = FocalLoss._get_one_hot(target, 3, torch.float, target.layout, target.device)
-        self.assertTrue(torch.all(result == torch.tensor([[0,0,0], [1,0,0], [0,1,0], [0,0,1]])))
+        self.assertTrue(torch.all(result == torch.tensor([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])))
 
         target = torch.tensor([0])
         result = FocalLoss._get_one_hot(target, 3, torch.float, target.layout, target.device)

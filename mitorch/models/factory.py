@@ -1,6 +1,7 @@
 from . import *
 from .heads import *
 
+
 class ModelFactory:
     PREDEFINED_MODELS = {
         'EfficientNetB0': lambda num_classes: Classifier(EfficientNetB0(), num_classes),
