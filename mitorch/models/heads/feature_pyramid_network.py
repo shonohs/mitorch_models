@@ -5,7 +5,7 @@ from ..modules import Add, Conv2dAct
 
 class FeaturePyramidNetwork(Head):
     def __init__(self, backbone, out_channels=256):
-        super(FeaturePyramidNetwork, self).__init__(backbone, [5, 4, 3], [out_channels] * 5)
+        super().__init__(backbone, [5, 4, 3], [out_channels] * 5)
         base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
 
         self.conv0_0 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=1)
@@ -53,7 +53,7 @@ class FeaturePyramidNetwork(Head):
 
 class FeaturePyramidNetworkLite(Head):
     def __init__(self, backbone, out_channels=256):
-        super(FeaturePyramidNetworkLite, self).__init__(backbone, [5, 4, 3], [out_channels] * 5)
+        super().__init__(backbone, [5, 4, 3], [out_channels] * 5)
         base_output_shapes = Head.get_base_output_shapes(backbone, [5, 4, 3])
 
         self.conv0_0 = torch.nn.Conv2d(base_output_shapes[0], out_channels, kernel_size=1)

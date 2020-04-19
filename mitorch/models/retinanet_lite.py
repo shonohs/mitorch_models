@@ -18,4 +18,4 @@ class RetinaNetLite(RetinaNet):
             self.conv_cls[-1].pointwise_conv.conv.bias.data.fill_(-math.log((1 - pi) / pi))
 
     def __init__(self, backbone, num_classes, prior_box=None, num_blocks=4):
-        super(RetinaNetLite, self).__init__(backbone, num_classes, prior_box, num_blocks, RetinaNetLite.DetectionBlock)
+        super().__init__(backbone, num_classes, prior_box, num_blocks, RetinaNetLite.DetectionBlock)

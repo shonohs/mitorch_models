@@ -2,7 +2,7 @@
 import collections
 import torch
 from .model import Model
-from .modules import Conv2dAct, Conv2dBN, SEBlock, ChannelShuffle
+from .modules import Conv2dAct, Conv2dBN, SEBlock, ChannelShuffle, default_module_settings
 
 
 class ShuffleNetV2(Model):
@@ -10,7 +10,7 @@ class ShuffleNetV2(Model):
 
     class BasicBlock(torch.nn.Module):
         def __init__(self, in_channels, out_channels, use_se=False):
-            super(ShuffleNetV2.BasicBlock, self).__init__()
+            super().__init__()
             in_channels = in_channels // 2
             out_channels = out_channels // 2
 
@@ -34,7 +34,7 @@ class ShuffleNetV2(Model):
 
     class DownsampleBasicBlock(torch.nn.Module):
         def __init__(self, in_channels, out_channels, use_se=False):
-            super(ShuffleNetV2.DownsampleBasicBlock, self).__init__()
+            super().__init__()
             out_channels = out_channels // 2
 
             self.conv0 = Conv2dAct(in_channels, out_channels, kernel_size=1)
@@ -59,12 +59,13 @@ class ShuffleNetV2(Model):
             x = torch.cat((x2, x1), 1)
             return self.shuffle(x)
 
+    @default_module_settings(use_bn=True)
     def __init__(self, channels_scaler=1.0, num_blocks=[4, 8, 4], use_se=False):
         first_in_channels = ShuffleNetV2.FIRST_STAGE_CHANNELS[channels_scaler]
         last_stage_out_channels = first_in_channels * (2 ** (len(num_blocks) - 1))
         final_out_channels = 1024 if last_stage_out_channels < 800 else 2048
 
-        super(ShuffleNetV2, self).__init__(final_out_channels, use_bn=True)
+        super().__init__(final_out_channels)
 
         blocks = []
         for i, n in enumerate(num_blocks):

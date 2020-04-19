@@ -5,7 +5,7 @@ from .non_max_suppression import NonMaxSuppression
 
 class SSDPredictor(ModuleBase):
     def __init__(self, num_classes, prior_box):
-        super(SSDPredictor, self).__init__()
+        super().__init__()
         self.num_classes = num_classes
         self.num_classifier = num_classes + 1
         self.prior_box = prior_box

@@ -20,7 +20,7 @@ class EfficientNet(Model):
 
     def __init__(self, width_multiplier=1, depth_multiplier=1, dropout_ratio=0.2):
         m = width_multiplier
-        super(EfficientNet, self).__init__(round(1280 * m / 8) * 8)
+        super().__init__(round(1280 * m / 8) * 8)
 
         self.width_multiplier = width_multiplier
         self.depth_multiplier = depth_multiplier
@@ -49,53 +49,39 @@ class EfficientNet(Model):
 
 
 class EfficientNetB0(EfficientNet):
-    INPUT_SIZE = 224
+    pass
 
 
 class EfficientNetB1(EfficientNet):
-    INPUT_SIZE = 240
-
     def __init__(self):
-        super(EfficientNetB1, self).__init__(1.0, 1.1, 0.2)
+        super().__init__(1.0, 1.1, 0.2)
 
 
 class EfficientNetB2(EfficientNet):
-    INPUT_SIZE = 260
-
     def __init__(self):
-        super(EfficientNetB2, self).__init__(1.1, 1.2, 0.3)
+        super().__init__(1.1, 1.2, 0.3)
 
 
 class EfficientNetB3(EfficientNet):
-    INPUT_SIZE = 300
-
     def __init__(self):
-        super(EfficientNetB3, self).__init__(1.2, 1.4, 0.3)
+        super().__init__(1.2, 1.4, 0.3)
 
 
 class EfficientNetB4(EfficientNet):
-    INPUT_SIZE = 380
-
     def __init__(self):
-        super(EfficientNetB4, self).__init__(1.4, 1.8, 0.4)
+        super().__init__(1.4, 1.8, 0.4)
 
 
 class EfficientNetB5(EfficientNet):
-    INPUT_SIZE = 456
-
     def __init__(self):
-        super(EfficientNetB5, self).__init__(1.6, 2.2, 0.4)
+        super().__init__(1.6, 2.2, 0.4)
 
 
 class EfficientNetB6(EfficientNet):
-    INPUT_SIZE = 528
-
     def __init__(self):
-        super(EfficientNetB6, self).__init__(1.8, 2.6, 0.5)
+        super().__init__(1.8, 2.6, 0.5)
 
 
 class EfficientNetB7(EfficientNet):
-    INPUT_SIZE = 600
-
     def __init__(self):
-        super(EfficientNetB7, self).__init__(2.0, 3.1, 0.5)
+        super().__init__(2.0, 3.1, 0.5)

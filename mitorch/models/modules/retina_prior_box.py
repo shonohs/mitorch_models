@@ -4,7 +4,7 @@ from .prior_box import PriorBox
 
 class RetinaPriorBox(PriorBox):
     def __init__(self, num_scales, aspect_ratios=[0.5, 1, 2], anchor_scales=[1, 1.25999, 1.58740]):
-        super(RetinaPriorBox, self).__init__(num_scales)
+        super().__init__(num_scales)
         self.num_scales = num_scales
         self.aspect_ratios = aspect_ratios
         self.anchor_scales = anchor_scales

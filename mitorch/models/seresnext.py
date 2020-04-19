@@ -6,7 +6,7 @@ from .modules import SEBlock
 class SEResNext(ResNext):
     class BasicBlock(ResNext.BasicBlock):
         def __init__(self, in_channels, out_channels, cardinality, stride=1, reduction_ratio=16):
-            super(SEResNext.BasicBlock, self).__init__(in_channels, out_channels, cardinality, stride)
+            super().__init__(in_channels, out_channels, cardinality, stride)
             self.se = SEBlock(out_channels, reduction_ratio)
 
         def forward(self, input):
@@ -20,7 +20,7 @@ class SEResNext(ResNext):
 
     def __init__(self, num_blocks=[3, 4, 6, 3], cardinality=32, bottleneck_width=4, reduction_ratio=16):
         self.reduction_ratio = reduction_ratio
-        super(SEResNext, self).__init__(num_blocks, cardinality, bottleneck_width)
+        super().__init__(num_blocks, cardinality, bottleneck_width)
 
     def _make_stage(self, in_channels, out_channels, num_blocks, first_block_stride, cardinality, index):
         blocks = [(f'block{index}_0', SEResNext.BasicBlock(in_channels, out_channels, cardinality, first_block_stride, self.reduction_ratio))]
@@ -31,19 +31,19 @@ class SEResNext(ResNext):
 
 class SEResNext14(SEResNext):
     def __init__(self):
-        super(SEResNext14, self).__init__([1, 1, 1, 1], cardinality=32, bottleneck_width=4, reduction_ratio=16)
+        super().__init__([1, 1, 1, 1])
 
 
 class SEResNext26(SEResNext):
     def __init__(self):
-        super(SEResNext26, self).__init__([2, 2, 2, 2], cardinality=32, bottleneck_width=4, reduction_ratio=16)
+        super().__init__([2, 2, 2, 2])
 
 
 class SEResNext50(SEResNext):
     def __init__(self):
-        super(SEResNext50, self).__init__([3, 4, 6, 3], cardinality=32, bottleneck_width=4, reduction_ratio=16)
+        super().__init__([3, 4, 6, 3])
 
 
 class SEResNext101(SEResNext):
     def __init__(self):
-        super(SEResNext101, self).__init__([3, 4, 23, 3], cardinality=32, bottleneck_width=4, reduction_ratio=16)
+        super().__init__([3, 4, 23, 3])

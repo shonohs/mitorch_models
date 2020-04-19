@@ -4,7 +4,7 @@ from .ssd_loss import SSDLoss
 
 class FocalLoss(SSDLoss):
     def __init__(self, num_classes, prior_box, alpha=0.25, gamma=2):
-        super(FocalLoss, self).__init__(num_classes, prior_box)
+        super().__init__(num_classes, prior_box)
         self.negative_iou_threshold = 0.4
         self.positive_iou_threshold = 0.5
         self.num_classes

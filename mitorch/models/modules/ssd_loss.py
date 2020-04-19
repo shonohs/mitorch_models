@@ -5,7 +5,7 @@ from .base import ModuleBase
 
 class SSDLoss(ModuleBase):
     def __init__(self, num_classes, prior_box):
-        super(SSDLoss, self).__init__()
+        super().__init__()
         self.negative_iou_threshold = 0.5
         self.positive_iou_threshold = 0.5
         self.neg_pos_ratio = 3

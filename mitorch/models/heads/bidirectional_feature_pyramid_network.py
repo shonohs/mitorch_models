@@ -13,7 +13,7 @@ class BidirectionalFeaturePyramidNetwork(Head):
     """
     class BasicBlock(Model):
         def __init__(self, input_channels, out_channels):
-            super(BidirectionalFeaturePyramidNetwork.BasicBlock, self).__init__([out_channels] * 5)
+            super().__init__([out_channels] * 5)
 
             assert len(input_channels) == 5
 
@@ -74,7 +74,7 @@ class BidirectionalFeaturePyramidNetwork(Head):
             return [n7, n6, n5, n4, n3]
 
     def __init__(self, backbone, out_channels=256, num_blocks=1):
-        super(BidirectionalFeaturePyramidNetwork, self).__init__(backbone, [5, 4, 3], [out_channels] * 5)
+        super().__init__(backbone, [5, 4, 3], [out_channels] * 5)
         base_output_shapes = Head.get_base_output_shapes(backbone, [5, 4, 3])
 
         self.base_model = backbone

@@ -13,7 +13,7 @@ from .head import Head
 class MnasFPN(Head):
     class BasicBlock(Model):
         def __init__(self, in_channels, feature_channels, kernel_size, in_scales, out_scale):
-            super(MnasFPN.BasicBlock, self).__init__(in_channels)
+            super().__init__(in_channels)
             assert len(in_scales) == 2
             assert all(s in [3, 4, 5, 6] for s in in_scales)
             assert out_scale in [3, 4, 5, 6]
@@ -42,7 +42,7 @@ class MnasFPN(Head):
 
     class BasicCell(Model):
         def __init__(self):
-            super(MnasFPN.BasicCell, self).__init__([48, 48, 48, 48])
+            super().__init__([48, 48, 48, 48])
             self.conv0 = MnasFPN.BasicBlock(48, 256, 3, [4, 5], 4)
             self.conv1 = MnasFPN.BasicBlock(48, 128, 3, [3, 4], 3)
             self.conv2 = MnasFPN.BasicBlock(48, 128, 3, [3, 4], 4)

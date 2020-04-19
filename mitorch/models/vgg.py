@@ -2,16 +2,17 @@
 import collections
 import torch
 from .model import Model
-from .modules import Conv2dAct, LinearAct
+from .modules import Conv2dAct, LinearAct, default_module_settings
 
 
 class VGG(Model):
-    INPUT_SIZE = 224
+    pass
 
 
 class VGG_A(VGG):
+    @default_module_settings(use_bn=False)
     def __init__(self):
-        super(VGG_A, self).__init__(4096, use_bn=False)
+        super().__init__(4096)
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0', Conv2dAct(3, 64, kernel_size=3, padding=1)),
             ('pool0', torch.nn.MaxPool2d(kernel_size=2, stride=2)),
@@ -32,8 +33,9 @@ class VGG_A(VGG):
 
 
 class VGG_B(VGG):
+    @default_module_settings(use_bn=False)
     def __init__(self):
-        super(VGG_B, self).__init__(4096, use_bn=False)
+        super().__init__(4096)
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0_0', Conv2dAct(3, 64, kernel_size=3, padding=1)),
             ('conv0_1', Conv2dAct(64, 64, kernel_size=3, padding=1)),
@@ -56,8 +58,9 @@ class VGG_B(VGG):
 
 
 class VGG_C(VGG):
+    @default_module_settings(use_bn=False)
     def __init__(self):
-        super(VGG_C, self).__init__(4096, use_bn=False)
+        super().__init__(4096)
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0_0', Conv2dAct(3, 64, kernel_size=3, padding=1)),
             ('conv0_1', Conv2dAct(64, 64, kernel_size=3, padding=1)),
@@ -83,8 +86,9 @@ class VGG_C(VGG):
 
 
 class VGG_D(VGG):
+    @default_module_settings(use_bn=False)
     def __init__(self):
-        super(VGG_D, self).__init__(4096, use_bn=False)
+        super().__init__(4096)
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0_0', Conv2dAct(3, 64, kernel_size=3, padding=1)),
             ('conv0_1', Conv2dAct(64, 64, kernel_size=3, padding=1)),
@@ -110,8 +114,9 @@ class VGG_D(VGG):
 
 
 class VGG_E(VGG):
+    @default_module_settings(use_bn=False)
     def __init__(self):
-        super(VGG_E, self).__init__(4096, use_bn=False)
+        super().__init__(4096)
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0_0', Conv2dAct(3, 64, kernel_size=3, padding=1)),
             ('conv0_1', Conv2dAct(64, 64, kernel_size=3, padding=1)),
@@ -145,8 +150,9 @@ class VGG16(VGG_D):
 
 class VGG16ForSSD(VGG):
     """SSD modification of VGG16. Changed pool4 and replaced fc0 and fc1"""
+    @default_module_settings(use_bn=False)
     def __init__(self):
-        super(VGG16ForSSD, self).__init__(1024, use_bn=False)
+        super().__init__(1024)
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0_0', Conv2dAct(3, 64, kernel_size=3, padding=1)),
             ('conv0_1', Conv2dAct(64, 64, kernel_size=3, padding=1)),

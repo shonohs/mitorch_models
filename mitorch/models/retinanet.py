@@ -8,7 +8,7 @@ from .modules import Conv2dAct, FocalLoss, RetinaPriorBox, RetinaPredictor, Modu
 class RetinaNet(Model):
     class DetectionBlock(ModuleBase):
         def __init__(self, in_channels, num_outputs, num_classes, num_blocks):
-            super(RetinaNet.DetectionBlock, self).__init__()
+            super().__init__()
             self.conv_loc = self._create_branch(in_channels, num_outputs * 4, num_blocks)
             self.conv_cls = self._create_branch(in_channels, num_classes * num_outputs, num_blocks)
 
@@ -26,7 +26,7 @@ class RetinaNet(Model):
             self.conv_cls[-1].bias.data.fill_(-math.log((1 - pi) / pi))
 
     def __init__(self, backbone, num_classes, prior_box=None, num_blocks=4, detection_block_class=None):
-        super(RetinaNet, self).__init__(None)
+        super().__init__(None)
         self.base_model = backbone
 
         if not prior_box:

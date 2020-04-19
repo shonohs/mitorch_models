@@ -4,7 +4,7 @@ from .base import ModuleBase
 
 class ChannelShuffle(ModuleBase):
     def __init__(self, num_groups):
-        super(ChannelShuffle, self).__init__()
+        super().__init__()
         self.num_groups = num_groups
 
     def forward(self, input):

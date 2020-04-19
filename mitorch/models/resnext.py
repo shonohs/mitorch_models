@@ -2,14 +2,14 @@
 import collections
 import torch
 from .model import Model
-from .modules import Add, Conv2dAct, Conv2dBN
+from .modules import Add, Conv2dAct, Conv2dBN, default_module_settings
 
 
 class ResNext(Model):
     class BasicBlock(torch.nn.Module):
         """Depth=3 building block"""
         def __init__(self, in_channels, out_channels, cardinality, stride=1):
-            super(ResNext.BasicBlock, self).__init__()
+            super().__init__()
             self.conv0 = Conv2dAct(in_channels, out_channels // 2, kernel_size=1)
             self.conv1 = Conv2dAct(out_channels // 2, out_channels // 2, kernel_size=3, padding=1, stride=stride, groups=cardinality)
             self.conv2 = Conv2dBN(out_channels // 2, out_channels, kernel_size=1)
@@ -26,11 +26,12 @@ class ResNext(Model):
             x = self.add(x, self.conv_shortcut(input) if self.conv_shortcut else input)
             return self.activation(x)
 
+    @default_module_settings(use_bn=True)
     def __init__(self, num_blocks=[3, 4, 6, 3], cardinality=32, bottleneck_width=4):
         in_channels = 64
         out_channels = bottleneck_width * cardinality * 2
         feature_channels = out_channels * (2 ** (len(num_blocks) - 1))
-        super(ResNext, self).__init__(feature_channels, use_bn=True)
+        super().__init__(feature_channels)
 
         first_block_stride = 1
         blocks = []
@@ -55,19 +56,19 @@ class ResNext(Model):
 
 class ResNext14(ResNext):
     def __init__(self):
-        super(ResNext14, self).__init__([1, 1, 1, 1], cardinality=32, bottleneck_width=4)
+        super().__init__([1, 1, 1, 1])
 
 
 class ResNext26(ResNext):
     def __init__(self):
-        super(ResNext26, self).__init__([2, 2, 2, 2], cardinality=32, bottleneck_width=4)
+        super().__init__([2, 2, 2, 2])
 
 
 class ResNext50(ResNext):
     def __init__(self):
-        super(ResNext50, self).__init__([3, 4, 6, 3], cardinality=32, bottleneck_width=4)
+        super().__init__([3, 4, 6, 3])
 
 
 class ResNext101(ResNext):
     def __init__(self):
-        super(ResNext101, self).__init__([3, 4, 23, 3], cardinality=32, bottleneck_width=4)
+        super().__init__([3, 4, 23, 3])

@@ -7,7 +7,7 @@ class SSDLiteExtraLayers(Head):
         m = width_multiplier
         base_output_shapes = Head.get_base_output_shapes(backbone, [4, 5])
         out_channels = base_output_shapes + [int(512 * m), int(256 * m), int(256 * m), int(128 * m)]
-        super(SSDLiteExtraLayers, self).__init__(backbone, [4, 5], out_channels)
+        super().__init__(backbone, [4, 5], out_channels)
         assert len(out_channels) == 6
 
         self.conv0 = DepthwiseSeparableConv2d(out_channels[1], out_channels[2], kernel_size=3, stride=2, padding=1)

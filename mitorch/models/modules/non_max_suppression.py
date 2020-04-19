@@ -4,8 +4,8 @@ from .base import ModuleBase
 
 class NonMaxSuppression(ModuleBase):
     def __init__(self, max_detections=10):
-        super(NonMaxSuppression, self).__init__()
-        self.max_detections = 10
+        super().__init__()
+        self.max_detections = max_detections
         self.iou_threshold = 0.45
         self.prob_threshold = 0.05
 

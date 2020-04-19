@@ -10,7 +10,7 @@ class ShuffleNet(Model):
 
     class BasicBlock(torch.nn.Module):
         def __init__(self, in_channels, out_channels, num_groups):
-            super(ShuffleNet.BasicBlock, self).__init__()
+            super().__init__()
             assert in_channels == out_channels
 
             bottleneck_channels = out_channels // 4
@@ -33,7 +33,7 @@ class ShuffleNet(Model):
 
     class DownsampleBasicBlock(torch.nn.Module):
         def __init__(self, in_channels, out_channels, num_groups, stride, skip_first_group_conv=False):
-            super(ShuffleNet.DownsampleBasicBlock, self).__init__()
+            super().__init__()
             assert stride > 1
 
             out_channels = out_channels - in_channels
@@ -60,7 +60,7 @@ class ShuffleNet(Model):
         assert num_groups in ShuffleNet.FIRST_STAGE_CHANNELS, "Unexpected number of groups"
         first_stage_channels = int(ShuffleNet.FIRST_STAGE_CHANNELS[num_groups] * width_multiplier)
         feature_planes = first_stage_channels * (2 ** (len(num_blocks) - 1))
-        super(ShuffleNet, self).__init__(feature_planes)
+        super().__init__(feature_planes)
 
         in_planes = 24
         out_planes = first_stage_channels

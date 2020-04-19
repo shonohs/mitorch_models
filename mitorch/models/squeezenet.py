@@ -7,7 +7,7 @@ from .modules import Conv2dAct
 class SqueezeNet(Model):
     class BasicBlock(torch.nn.Module):
         def __init__(self, in_channels, squeeze_channels, expand_channels):
-            super(SqueezeNet.BasicBlock, self).__init__()
+            super().__init__()
             self.conv0 = Conv2dAct(in_channels, squeeze_channels, kernel_size=1)
             self.conv1 = Conv2dAct(squeeze_channels, expand_channels // 2, kernel_size=1)
             self.conv2 = Conv2dAct(squeeze_channels, expand_channels // 2, kernel_size=3, padding=1)
@@ -17,7 +17,7 @@ class SqueezeNet(Model):
             return torch.cat([self.conv1(x), self.conv2(x)], 1)
 
     def __init__(self, squeeze_ratio=0.125, dropout_ratio=0.5):
-        super(SqueezeNet, self).__init__(512)
+        super().__init__(512)
 
         r = squeeze_ratio
         basic_block = SqueezeNet.BasicBlock

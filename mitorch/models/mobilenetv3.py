@@ -2,13 +2,14 @@
 import collections
 import torch
 from .model import Model
-from .modules import Conv2dAct, MBConv
+from .modules import Conv2dAct, MBConv, default_module_settings
 
 
 class MobileNetV3(Model):
-    def __init__(self, width_multiplier=1, activation='relu6', dropout_ratio=0.2):
+    @default_module_settings(activation='relu6')
+    def __init__(self, width_multiplier=1, dropout_ratio=0.2, **kwargs):
         m = width_multiplier
-        super(MobileNetV3, self).__init__(int(1280 * m), activation=activation)
+        super().__init__(int(1280 * m), **kwargs)
 
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0', Conv2dAct(3, int(16 * m), kernel_size=3, padding=1, stride=2, activation='hswish')),
@@ -36,9 +37,10 @@ class MobileNetV3(Model):
 
 
 class MobileNetV3Small(Model):
-    def __init__(self, width_multiplier=1, activation='relu6', dropout_ratio=0.2):
+    @default_module_settings(activation='relu6')
+    def __init__(self, width_multiplier=1, dropout_ratio=0.2, **kwargs):
         m = width_multiplier
-        super(MobileNetV3Small, self).__init__(int(1024 * m), activation=activation)
+        super().__init__(int(1024 * m), **kwargs)
 
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0', Conv2dAct(3, int(16 * m), kernel_size=3, padding=1, stride=2, activation='hswish')),

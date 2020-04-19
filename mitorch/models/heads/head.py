@@ -22,7 +22,7 @@ class Head(Model):
                          'VGG16ForSSD': {5: 'features.conv5_1', 4: 'features.conv3_2', 3: 'features.conv2_2'}}
 
     def __init__(self, base_model, input_scales, output_channels):
-        super(Head, self).__init__(output_channels)
+        super().__init__(output_channels)
         self.base_model = base_model
         self.base_feature_names = Head.get_base_feature_names(base_model, input_scales)
 

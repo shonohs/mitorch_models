@@ -1,15 +1,14 @@
 import torch
-from .base import ModuleBase
+from .base import ModuleBase, default_module_settings
 from .activation import HardSwish, Swish
 
 
 class Conv2dAct(ModuleBase):
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, use_bn=True, activation=None):
-        super(Conv2dAct, self).__init__()
-        self.explicit_settings = {'use_bn': use_bn, 'activation': activation}
-
-        use_bn = use_bn if use_bn is not None else True
-        activation = activation if activation is not None else 'relu'
+    @default_module_settings(use_bn=True, activation='relu')
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, **kwargs):
+        super().__init__(**kwargs)
+        use_bn = self.module_settings['use_bn']
+        activation = self.module_settings['activation']
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -31,15 +30,6 @@ class Conv2dAct(ModuleBase):
             x = self.activation(x)
         return x
 
-    def apply_settings(self, kwargs):
-        if self.explicit_settings['use_bn'] is None and kwargs.get('use_bn') is not None:
-            use_bn = kwargs.get('use_bn')
-            self.conv = torch.nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, bias=(not use_bn))
-            self.bn = torch.nn.BatchNorm2d(self.out_channels) if use_bn else None
-
-        if self.explicit_settings['activation'] is None and kwargs.get('activation') is not None:
-            self._set_activation(kwargs.get('activation'))
-
     def _set_activation(self, act):
         assert act in ['relu', 'hswish', 'swish', 'relu6', 'none']
 
@@ -57,7 +47,7 @@ class Conv2dAct(ModuleBase):
 
 class Conv2dBN(torch.nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1):
-        super(Conv2dBN, self).__init__()
+        super().__init__()
         self.conv = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias=False)
         self.bn = torch.nn.BatchNorm2d(out_channels)
 

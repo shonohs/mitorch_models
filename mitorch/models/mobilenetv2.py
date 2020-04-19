@@ -2,13 +2,13 @@
 import collections
 import torch
 from .model import Model
-from .modules import Add, Conv2dAct, DepthwiseSeparableConv2d
+from .modules import Add, Conv2dAct, DepthwiseSeparableConv2d, default_module_settings
 
 
 class MobileNetV2(Model):
     class BasicBlock(torch.nn.Module):
         def __init__(self, in_channels, out_channels, expansion_factor, stride=1):
-            super(MobileNetV2.BasicBlock, self).__init__()
+            super().__init__()
             intermediate_channels = in_channels * expansion_factor
             self.conv0 = Conv2dAct(in_channels, intermediate_channels, kernel_size=1)
             self.conv1 = DepthwiseSeparableConv2d(intermediate_channels, out_channels, kernel_size=3, stride=stride, padding=1, activation2='none')
@@ -21,8 +21,9 @@ class MobileNetV2(Model):
                 x = self.residual(x, input)
             return x
 
-    def __init__(self, width_multiplier=1, activation='relu6'):
-        super(MobileNetV2, self).__init__(output_dim=1280, activation=activation)
+    @default_module_settings(activation='relu6')
+    def __init__(self, width_multiplier=1):
+        super().__init__(output_dim=1280)
 
         m = width_multiplier
         self.features = torch.nn.Sequential(collections.OrderedDict([
