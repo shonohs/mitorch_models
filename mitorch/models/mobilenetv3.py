@@ -2,11 +2,10 @@
 import collections
 import torch
 from .model import Model
-from .modules import Conv2dAct, MBConv, default_module_settings
+from .modules import Conv2dAct, MBConv
 
 
 class MobileNetV3(Model):
-    @default_module_settings(activation='relu6')
     def __init__(self, width_multiplier=1, dropout_ratio=0.2, **kwargs):
         m = width_multiplier
         super().__init__(int(1280 * m), **kwargs)
@@ -37,7 +36,6 @@ class MobileNetV3(Model):
 
 
 class MobileNetV3Small(Model):
-    @default_module_settings(activation='relu6')
     def __init__(self, width_multiplier=1, dropout_ratio=0.2, **kwargs):
         m = width_multiplier
         super().__init__(int(1024 * m), **kwargs)

@@ -1,5 +1,5 @@
 import unittest
-from mitorch.models.modules import ModuleBase, default_module_settings
+from mitorch.models.modules import ModuleBase, default_module_settings, set_module_settings
 
 
 class TestModule(unittest.TestCase):
@@ -35,6 +35,24 @@ class TestModule(unittest.TestCase):
 
         module = make_module()
         self.assertEqual(module.module_settings['testparam'], 1)
+
+    def test_set_module_settings(self):
+        with set_module_settings(testparam=1):
+            module = ModuleBase()
+        self.assertEqual(module.module_settings['testparam'], 1)
+
+        @default_module_settings(testparam=1, testparam2=2)
+        def make_module():
+            return ModuleBase()
+
+        with set_module_settings(testparam=3):
+            module = make_module()
+        self.assertEqual(module.module_settings, {'testparam': 3, 'testparam2': 2})
+
+        with set_module_settings(**{'!testparam': 5, 'testparam2': 5}):
+            module = make_module()
+
+        self.assertEqual(module.module_settings, {'testparam': 5, 'testparam2': 5})
 
 
 if __name__ == '__main__':

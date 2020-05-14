@@ -1,7 +1,21 @@
+import contextlib
 import functools
 import torch
 
-module_settings = {}
+_module_settings = {}
+
+
+@contextlib.contextmanager
+def set_module_settings(**kwargs):
+    global _module_settings
+    old_module_settings = _module_settings.copy()
+    try:
+        for key in kwargs:
+            if key not in _module_settings:
+                _module_settings[key] = kwargs[key]
+        yield
+    finally:
+        _module_settings = old_module_settings
 
 
 def default_module_settings(**settings_kwargs):
@@ -14,13 +28,13 @@ def default_module_settings(**settings_kwargs):
     def settings_wrapper2(f):
         @functools.wraps(f)
         def settings_wrapper(*args, **kwargs):
-            global module_settings
-            old_module_settings = module_settings.copy()
+            global _module_settings
+            old_module_settings = _module_settings.copy()
             for key in settings_kwargs:
-                if key not in module_settings:
-                    module_settings[key] = settings_kwargs[key]
+                if key not in _module_settings:
+                    _module_settings[key] = settings_kwargs[key]
             result = f(*args, **kwargs)
-            module_settings = old_module_settings
+            _module_settings = old_module_settings
             return result
         return settings_wrapper
     return settings_wrapper2
@@ -31,13 +45,13 @@ class ModuleBase(torch.nn.Module):
 
     def __init__(self, **kwargs):
         super().__init__()
-        global module_settings
+        global _module_settings
         values = kwargs
-        for key in module_settings:
+        for key in _module_settings:
             if key[0] == '!':
-                values[key[1:]] = module_settings[key]
+                values[key[1:]] = _module_settings[key]
             elif key not in values:
-                values[key] = module_settings[key]
+                values[key] = _module_settings[key]
 
         self.module_settings = values
 

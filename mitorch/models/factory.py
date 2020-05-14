@@ -1,5 +1,6 @@
 from . import *
 from .heads import *
+from .modules import set_module_settings
 
 
 class ModelFactory:
@@ -190,12 +191,30 @@ class ModelFactory:
         'EfficientDetD7': 1536
     }
 
+    def _with_relu6(creator, num_classes):
+        with set_module_settings(**{'!activation': 'relu6', '!se_activation': 'relu6'}):
+            return creator(num_classes)
+
+    PREDEFINED_SUFFIXES = {'Relu6': _with_relu6}
+
     @staticmethod
     def create(model_name, num_classes):
-        if model_name not in ModelFactory.PREDEFINED_MODELS:
+        model = None
+        creator = ModelFactory.PREDEFINED_MODELS.get(model_name)
+        if creator:
+            model = creator(num_classes)
+        else:
+            for suffix in ModelFactory.PREDEFINED_SUFFIXES:
+                if model_name.endswith(suffix):
+                    creator = ModelFactory.PREDEFINED_MODELS.get(model_name[:-len(suffix)])
+                    if creator:
+                        model = ModelFactory.PREDEFINED_SUFFIXES[suffix](creator, num_classes)
+                        model_name = model_name[:-len(suffix)]
+                        break
+
+        if not model:
             raise NotImplementedError(f"Unknown model name: {model_name}")
 
-        model = ModelFactory.PREDEFINED_MODELS[model_name](num_classes)
         model.reset_parameters()
 
         if model_name in ModelFactory.RECOMMENDED_INPUT_SIZES:

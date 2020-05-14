@@ -18,7 +18,7 @@ class ShuffleNetV2(Model):
             self.conv1 = Conv2dBN(out_channels, out_channels, kernel_size=3, padding=1, groups=out_channels)
             self.conv2 = Conv2dAct(out_channels, out_channels, kernel_size=1)
 
-            self.se = SEBlock if use_se else None
+            self.se = SEBlock(out_channels, 4) if use_se else None
             self.shuffle = ChannelShuffle(2)
 
         def forward(self, input):
