@@ -43,13 +43,18 @@ def default_module_settings(**settings_kwargs):
 class ModuleBase(torch.nn.Module):
     VERSION = (0, 0)
 
+    # If 'none' activation is specified by kwargs, it has the highest priority.
+    # This is because some architectures need blocks without activation.
+    PRIORITY_KWARGS_SETTINGS = {'activation': 'none', 'activation2': 'none'}
+
     def __init__(self, **kwargs):
         super().__init__()
         global _module_settings
         values = kwargs
         for key in _module_settings:
             if key[0] == '!':
-                values[key[1:]] = _module_settings[key]
+                if not self._has_kwargs_high_priority(kwargs, key[1:]):
+                    values[key[1:]] = _module_settings[key]
             elif key not in values:
                 values[key] = _module_settings[key]
 
@@ -57,3 +62,7 @@ class ModuleBase(torch.nn.Module):
 
     def reset_parameters(self):
         pass
+
+    @staticmethod
+    def _has_kwargs_high_priority(kwargs, name):
+        return name in kwargs and name in ModuleBase.PRIORITY_KWARGS_SETTINGS and kwargs[name] == ModuleBase.PRIORITY_KWARGS_SETTINGS[name]
