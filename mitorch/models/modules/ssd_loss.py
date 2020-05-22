@@ -123,7 +123,7 @@ class SSDLoss(ModuleBase):
         target_locations = []
         target_classifications = []
         for target in targets:
-            target = torch.tensor(target, device=priors.device)
+            target = torch.tensor(target, dtype=torch.float32, device=priors.device)
             target_location, target_classification = self.assign_priors(target, priors, self.negative_iou_threshold, self.positive_iou_threshold)
             target_locations.append(target_location)
             target_classifications.append(target_classification)
