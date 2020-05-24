@@ -1,6 +1,9 @@
 # mitorch-models
 A collection of vision-related PyTorch models.
 
+## Mitorch framework
+This library is a part of [MiTorch framework](https://github.com/shonohs/mitorch).
+
 ## Readability first
 This library is optimized for readability. We think it will help you understand the core ideas of each models. Reproducing the results from the papers is not the goal of this project.
 
@@ -9,10 +12,38 @@ This library is optimized for readability. We think it will help you understand 
 pip install mitorch-models
 ```
 
+## Classification
 ```python
 from mitorch.models import ModelFactory
 model = ModelFactory.create('MobileNetV3', 1000)  # Model name and the number of classes.
+
+input_size = model.INPUT_SIZE  # Recommended input size.
+inputs = torch.randn(1, 3, input_size, input_size, dtype=torch.float)
+outputs = model(inputs)
+# Unlike Object Detection models, Loss and Predictor is not included for classification models.
+# Please use appropriate layers such as Softmax or Sigmoid.
 ```
+
+## Object Detection
+```python
+from mitorch.models import ModelFactory
+model = ModelFactory.create('MobileNetV3-SSDLite', 80)
+
+input_size = model.INPUT_SIZE  # Recommended input size.
+inputs = torch.randn(1, 3, input_size, input_size, dtype=torch.float)
+outputs = model(inputs)
+
+# Get a list of detections. Each detected box is represented as [class_id, probability, min_x, min_y, max_x, max_y].
+prediction_results = model.predictor(outputs)
+
+# Get a training loss.
+# The format of each target is [class_id, min_x, min_y, max_x, max_y].
+targets = [[[0, 0.1, 0.1, 0.9, 0.9], [3, 0.5, 0.5, 0.6, 0.6]]]
+loss = model.loss(outputs, targets)
+```
+
+For more details, please see mitorch framework.
+
 
 # Implemented models
 ## Classification
