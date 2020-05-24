@@ -120,16 +120,20 @@ class SSDLoss(ModuleBase):
 
         returns: (target_location, target_classification)
         """
-        target_locations = []
-        target_classifications = []
-        for target in targets:
-            target = torch.tensor(target, dtype=torch.float32, device=priors.device)
-            target_location, target_classification = self.assign_priors(target, priors, self.negative_iou_threshold, self.positive_iou_threshold)
-            target_locations.append(target_location)
-            target_classifications.append(target_classification)
-        return (torch.stack(target_locations), torch.stack(target_classifications))
+        target_tensors = [torch.tensor(target, dtype=torch.float32, device=priors.device) for target in targets]
+        assigned = [self.assign_priors(target, priors, self.negative_iou_threshold, self.positive_iou_threshold) for target in target_tensors]
+        target_locations = torch.stack([a[0] for a in assigned])
+        target_classifications = torch.stack([a[1] for a in assigned])
+        return (target_locations, target_classifications)
 
     def loss_classification(self, pred_classification, target_classification):
+        """
+        Args:
+            pred_classification: Shape (N, num_prior, num_classes)
+            target_classification: Shape (N, num_prior)
+        Returns
+            loss_classification: Shape (1)
+        """
         # Hard negative mining
         mask = self.hard_negative_mining(pred_classification, target_classification, self.neg_pos_ratio)  # Shape: (N, num_prior)
         # Use 'sum' reduction since we divide the loss by num_positive later.
@@ -139,13 +143,8 @@ class SSDLoss(ModuleBase):
     def reshape_ssd_predictions(self, predictions):
         num_batch = len(predictions[0][0])
 
-        pred_location = []
-        pred_classification = []
-        for loc, cls in predictions:
-            loc = loc.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, 4)
-            cls = cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifier)
-            pred_location.append(loc)
-            pred_classification.append(cls)
+        pred_location = [loc.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, 4) for loc, _ in predictions]
+        pred_classification = [cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifier) for _, cls in predictions]
         return (torch.cat(pred_location, dim=1), torch.cat(pred_classification, dim=1))
 
     def forward(self, predictions, targets):
@@ -162,26 +161,29 @@ class SSDLoss(ModuleBase):
         priors = self.prior_box(predictions)
 
         batch_num = len(pred_location)
+        assert len(targets) == batch_num, f"Unexpected target format: {targets}"
 
         # pred_location.shape should be (N, num_prior, 4)
         assert (len(pred_location.shape) == 3 and pred_location.shape[0] == batch_num
-                and pred_location.shape[1] == len(priors) and pred_location.shape[2] == 4), "pred_location shape {} is not expected".format(pred_location.shape)
+                and pred_location.shape[1] == len(priors) and pred_location.shape[2] == 4), f"pred_location shape {pred_location.shape} is not expected"
 
         # pred_classification.shape should be (N, num_prior, num_classes + 1)
         assert (len(pred_classification.shape) == 3 and pred_classification.shape[0] == batch_num
-                and pred_classification.shape[1] == len(priors) and pred_classification.shape[2] == self.num_classifier)
+                and pred_classification.shape[1] == len(priors) and pred_classification.shape[2] == self.num_classifier), f"pred_classification shape {pred_classification.shape} is not expected"
 
         # target_location: shape (N, num_prior, 4)
         # target_classification: shape (N, num_prior)
         target_location, target_classification = self.encode_target(targets, priors)
-        assert len(target_location.shape) == 3 and target_location.shape[2] == 4
-        assert len(target_classification.shape) == 2 and target_classification.shape[0] == batch_num
+        assert len(target_location.shape) == 3 and target_location.shape[2] == 4, f"Invalid shape: {target_location.shape}"
+        assert len(target_classification.shape) == 2 and target_classification.shape[0] == batch_num, f"Invalid shape: {target_classification.shape}"
 
         positive_priors_index = target_classification > 0  # Shape: (N, num_prior)
+        num_positive = positive_priors_index.long().sum()
+        if num_positive == 0:
+            return torch.tensor(0, dtype=torch.float, requires_grad=True)
+
         loss_location = torch.nn.functional.smooth_l1_loss(pred_location[positive_priors_index].view(-1, 4), target_location[positive_priors_index].view(-1, 4), reduction='sum')
         loss_classification = self.loss_classification(pred_classification, target_classification)
-
-        num_positive = positive_priors_index.long().sum()
 
         loss = (loss_location + loss_classification) / num_positive
         return loss

@@ -13,6 +13,7 @@ class Model(torch.nn.Module):
         super().__init__()
         self.output_dim = output_dim
 
+    @torch.no_grad()
     def get_output_shapes(self, output_names):
         input = torch.randn(1, 3, 224, 224)
         outputs = self.forward(input, output_names)

@@ -12,9 +12,15 @@ class PriorBox(ModuleBase):
         self.max_size = 0.9
 
     def get_num_priors(self):
+        """Get the number of prior boxes for each cell on each scale."""
         return [len(self.aspect_ratios) * 2 + 2] * self.num_scales
 
     def forward(self, input):
+        """Construct prior boxes based on the input shape
+        Args:
+            input: List of tensors from each scales.
+                example: [(pred_loc, pred_cls), (pred_loc, prec_cls), ...]
+        """
         assert len(input) == self.num_scales
         # Get spatial shape of each features.
         shapes = [i[0].shape[2:] for i in input]
