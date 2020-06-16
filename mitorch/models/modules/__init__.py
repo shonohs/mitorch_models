@@ -11,9 +11,9 @@ from .retina_predictor import RetinaPredictor
 from .retina_prior_box import RetinaPriorBox
 from .se_block import SEBlock
 from .shuffle import ChannelShuffle
-from .ssd_loss import SSDLoss
-from .ssd_predictor import SSDPredictor
+from .ssd_loss import SSDLoss, SSDSigmoidLoss
+from .ssd_predictor import SSDPredictor, SSDSigmoidPredictor
 
 __all__ = ['HardSwish', 'HardSigmoid', 'Add', 'ModuleBase', 'default_module_settings', 'set_module_settings', 'Conv2dBN', 'Conv2dAct', 'DepthwiseSeparableConv2d',
            'FocalLoss', 'LinearAct', 'MBConv', 'PriorBox', 'RetinaPredictor', 'RetinaPriorBox', 'SEBlock',
-           'ChannelShuffle', 'SSDLoss', 'SSDPredictor']
+           'ChannelShuffle', 'SSDLoss', 'SSDSigmoidLoss', 'SSDPredictor', 'SSDSigmoidPredictor']

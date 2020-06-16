@@ -39,6 +39,7 @@ class ModelFactory:
         'EfficientNetB6-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB6()), num_classes),
         'EfficientNetB7-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(EfficientNetB7()), num_classes),
         'MobileNetV2-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV2()), num_classes),
+        'MobileNetV2-Sigmoid-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV2()), num_classes, use_sigmoid=True),
         'MobileNetV3-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV3()), num_classes),
         'MobileNetV3Small-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(MobileNetV3Small()), num_classes),
         'SEResNext50-SSDLite': lambda num_classes: SSDLite(SSDLiteExtraLayers(SEResNext50()), num_classes),
@@ -175,6 +176,7 @@ class ModelFactory:
         'SqueezeNet': 224,
         'VGG16': 224,
         'MobileNetV2-SSDLite': 320,
+        'MobileNetV2-Sigmoid-SSDLite': 320,
         'MobileNetV3-SSDLite': 320,
         'MobileNetV3Small-SSDLite': 320,
         'SEResNext50-SSDLite': 320,
@@ -192,6 +194,7 @@ class ModelFactory:
     }
 
     def _with_relu6(creator, num_classes):
+        # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
         with set_module_settings(**{'!activation': 'relu6', '!se_activation': 'relu6'}):
             return creator(num_classes)
 

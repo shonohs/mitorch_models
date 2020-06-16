@@ -11,7 +11,7 @@ class SSDLoss(ModuleBase):
         self.neg_pos_ratio = 3
         self.num_classes = num_classes
         self.prior_box = prior_box
-        self.num_classifier = num_classes + 1  # SSD has background class.
+        self.num_classifiers = num_classes + 1  # SSD has background class.
 
     def hard_negative_mining(self, pred_classification, target_classification, neg_pos_ratio):
         """ Hard negative mining. Returns the indices for the selected entries.
@@ -19,7 +19,7 @@ class SSDLoss(ModuleBase):
             pred_classification (N, num_prior, num_class+1)
             target_classification (N, num_prior)
         """
-        assert len(pred_classification.shape) == 3 and pred_classification.shape[2] == self.num_classes + 1
+        assert len(pred_classification.shape) == 3 and pred_classification.shape[2] == self.num_classifiers
         assert len(target_classification.shape) == 2
 
         pos_mask = target_classification > 0
@@ -144,7 +144,7 @@ class SSDLoss(ModuleBase):
         num_batch = len(predictions[0][0])
 
         pred_location = [loc.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, 4) for loc, _ in predictions]
-        pred_classification = [cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifier) for _, cls in predictions]
+        pred_classification = [cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifiers) for _, cls in predictions]
         return (torch.cat(pred_location, dim=1), torch.cat(pred_classification, dim=1))
 
     def forward(self, predictions, targets):
@@ -169,7 +169,7 @@ class SSDLoss(ModuleBase):
 
         # pred_classification.shape should be (N, num_prior, num_classes + 1)
         assert (len(pred_classification.shape) == 3 and pred_classification.shape[0] == batch_num
-                and pred_classification.shape[1] == len(priors) and pred_classification.shape[2] == self.num_classifier), f"pred_classification shape {pred_classification.shape} is not expected"
+                and pred_classification.shape[1] == len(priors) and pred_classification.shape[2] == self.num_classifiers), f"pred_classification shape {pred_classification.shape} is not expected"
 
         # target_location: shape (N, num_prior, 4)
         # target_classification: shape (N, num_prior)
@@ -187,3 +187,67 @@ class SSDLoss(ModuleBase):
 
         loss = (loss_location + loss_classification) / num_positive
         return loss
+
+
+class SSDSigmoidLoss(SSDLoss):
+    """Use Sigmoid instead of Softmax to get the classifications"""
+    def __init__(self, num_classes, prior_box):
+        super().__init__(num_classes, prior_box)
+        self.num_classifiers = num_classes
+
+    def hard_negative_mining(self, pred_classification, target_classification, neg_pos_ratio):
+        """ Hard negative mining. Returns the indices for the selected entries.
+        Args:
+            pred_classification (N, num_prior, num_class+1)
+            target_classification (N, num_prior)
+        """
+        assert len(pred_classification.shape) == 3 and pred_classification.shape[2] == self.num_classifiers
+        assert len(target_classification.shape) == 2
+
+        pos_mask = target_classification > 0
+        num_pos = pos_mask.long().sum(dim=1, keepdim=True)
+        num_neg = num_pos * neg_pos_ratio
+
+        with torch.no_grad():
+            negative_scores = 1 - torch.max(torch.sigmoid(pred_classification), dim=2)[0]  # (N, num_prior)
+            negative_scores[pos_mask] = math.inf  # Exclude positive boxes.
+
+            # Get Top-k mask
+            _, indexes = negative_scores.sort(dim=1)
+            _, orders = indexes.sort(dim=1)
+            neg_mask = orders < num_neg
+
+            return pos_mask | neg_mask
+
+    def loss_classification(self, pred_classification, target_classification):
+        """
+        Args:
+            pred_classification: Shape (N, num_prior, num_classes)
+            target_classification: Shape (N, num_prior)
+        Returns
+            loss_classification: Shape (1)
+        """
+        assert len(pred_classification.shape) == 3 and pred_classification.shape[2] == self.num_classes
+        assert len(target_classification.shape) == 2 and pred_classification.shape[0:2] == target_classification.shape[0:2]
+
+        # Hard negative mining
+        mask = self.hard_negative_mining(pred_classification, target_classification, self.neg_pos_ratio)  # Shape: (N, num_prior)
+        target = self._get_one_hot(target_classification[mask], self.num_classes, pred_classification.dtype, pred_classification.layout, pred_classification.device)
+
+        # Use 'sum' reduction since we divide the loss by num_positive later.
+        assert pred_classification[mask].shape == target.shape
+        return torch.nn.functional.binary_cross_entropy_with_logits(pred_classification[mask], target, reduction='sum')
+
+    @staticmethod
+    def _get_one_hot(target_classification, num_classes, dtype, layout, device):
+        assert len(target_classification) > 0
+        assert len(target_classification.shape) == 1
+        assert torch.all(target_classification >= 0)
+        assert num_classes > 0
+
+        # Multi-label
+        target_shape = (target_classification.shape[0], num_classes + 1)  # +1 dimension will be removed later.
+        target = torch.zeros(target_shape, dtype=dtype, layout=layout, device=device)
+        target.scatter_(1, target_classification.unsqueeze(-1), 1)
+        target = target[:, 1:]
+        return target
