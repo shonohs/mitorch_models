@@ -14,6 +14,11 @@ class RetinaNetLite(RetinaNet):
             ))
 
         def reset_parameters(self):
+            for c in self.conv_loc:
+                c.reset_parameters()
+            for c in self.conv_cls:
+                c.reset_parameters()
+
             pi = 0.01
             self.conv_cls[-1].pointwise_conv.conv.bias.data.fill_(-math.log((1 - pi) / pi))
 

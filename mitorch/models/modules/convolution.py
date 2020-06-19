@@ -4,6 +4,7 @@ from .activation import HardSwish, Swish
 
 
 class Conv2dAct(ModuleBase):
+    VERSION = (1, 0)
     @default_module_settings(use_bn=True, activation='relu')
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, **kwargs):
         super().__init__(**kwargs)
@@ -44,8 +45,15 @@ class Conv2dAct(ModuleBase):
         elif act == 'none':
             self.activation = None
 
+    def reset_parameters(self):
+        torch.nn.init.kaiming_normal_(self.conv.weight, mode='fan_out', nonlinearity='relu')
+        if self.conv.bias is not None:
+            torch.nn.init.zeros_(self.conv.bias)
 
-class Conv2dBN(torch.nn.Module):
+
+class Conv2dBN(ModuleBase):
+    VERSION = (1, 0)
+
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1):
         super().__init__()
         self.conv = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias=False)
@@ -53,3 +61,20 @@ class Conv2dBN(torch.nn.Module):
 
     def forward(self, input):
         return self.bn(self.conv(input))
+
+    def reset_parameters(self):
+        torch.nn.init.kaiming_normal_(self.conv.weight, mode='fan_out', nonlinearity='relu')
+
+
+class Conv2d(ModuleBase):
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True):
+        super().__init__()
+        self.conv = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias=bias)
+
+    def forward(self, input):
+        return self.conv(input)
+
+    def reset_parameters(self):
+        torch.nn.init.kaiming_normal_(self.conv.weight, mode='fan_out', nonlinearity='relu')
+        if self.conv.bias is not None:
+            torch.nn.init.zeros_(self.conv.bias)

@@ -1,10 +1,11 @@
+import math
 import torch
 from .model import Model
-from .modules import DepthwiseSeparableConv2d, PriorBox, SSDLoss, SSDSigmoidLoss, SSDPredictor, SSDSigmoidPredictor, default_module_settings
+from .modules import DepthwiseSeparableConv2d, PriorBox, SSDLoss, SSDSigmoidLoss, SSDPredictor, SSDSigmoidPredictor, default_module_settings, ModuleBase
 
 
 class SSDLite(Model):
-    class DetectionBlock(torch.nn.Module):
+    class DetectionBlock(ModuleBase):
         def __init__(self, in_channels, num_outputs, num_classifiers):
             super().__init__()
             self.conv_loc = DepthwiseSeparableConv2d(in_channels, num_outputs * 4, kernel_size=3, padding=1, use_bn2=False, activation2='none')
@@ -14,6 +15,14 @@ class SSDLite(Model):
             loc = self.conv_loc(input)
             cls = self.conv_cls(input)
             return loc, cls
+
+        def reset_parameters(self):
+            self.conv_loc.reset_parameters()
+            self.conv_cls.reset_parameters()
+
+            # Borrowed from RetinNet. TODO: Do we have an evidence that this works for SSDLite?
+            pi = 0.01
+            self.conv_cls.pointwise_conv.conv.bias.data.fill_(-math.log((1 - pi) / pi))
 
     @default_module_settings(use_bn=True)
     def __init__(self, backbone, num_classes, prior_box=None, use_sigmoid=False):
@@ -33,3 +42,7 @@ class SSDLite(Model):
         features = self.base_model(input)
         assert len(features) == len(self.detection_blocks)
         return [b(features[i]) for i, b in enumerate(self.detection_blocks)]
+
+    def reset_parameters(self):
+        for b in self.detection_blocks:
+            b.reset_parameters()

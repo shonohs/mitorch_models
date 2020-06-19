@@ -1,4 +1,3 @@
-import torch
 from .ssd_predictor import SSDSigmoidPredictor
 
 

@@ -2,7 +2,7 @@ import collections
 import math
 import torch
 from .model import Model
-from .modules import Conv2dAct, FocalLoss, RetinaPriorBox, RetinaPredictor, ModuleBase
+from .modules import Conv2d, Conv2dAct, FocalLoss, RetinaPriorBox, RetinaPredictor, ModuleBase
 
 
 class RetinaNet(Model):
@@ -15,15 +15,20 @@ class RetinaNet(Model):
         def _create_branch(self, in_channels, out_channels, num_blocks):
             return torch.nn.Sequential(collections.OrderedDict(
                 [(f'conv{i}', Conv2dAct(in_channels, in_channels, kernel_size=3, padding=1)) for i in range(num_blocks)]
-                + [(f'conv{num_blocks}', torch.nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1))]
+                + [(f'conv{num_blocks}', Conv2d(in_channels, out_channels, kernel_size=3, padding=1))]
             ))
 
         def forward(self, input):
             return self.conv_loc(input), self.conv_cls(input)
 
         def reset_parameters(self):
+            for c in self.conv_loc:
+                c.reset_parameters()
+            for c in self.conv_cls:
+                c.reset_parameters()
+
             pi = 0.01
-            self.conv_cls[-1].bias.data.fill_(-math.log((1 - pi) / pi))
+            self.conv_cls[-1].conv.bias.data.fill_(-math.log((1 - pi) / pi))
 
     def __init__(self, backbone, num_classes, prior_box=None, num_blocks=4, detection_block_class=None):
         super().__init__(None)
@@ -49,3 +54,6 @@ class RetinaNet(Model):
 
         assert [f.shape[2] for f in features] == sorted([f.shape[2] for f in features], reverse=True)
         return [self.detection_block(feature) for feature in features]
+
+    def reset_parameters(self):
+        self.detection_block.reset_parameters()
