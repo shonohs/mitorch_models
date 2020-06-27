@@ -198,7 +198,12 @@ class ModelFactory:
         with set_module_settings(**{'!activation': 'relu6', '!se_activation': 'relu6'}):
             return creator(num_classes)
 
-    PREDEFINED_SUFFIXES = {'Relu6': _with_relu6}
+    def _with_relu(creator, num_classes):
+        # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
+        with set_module_settings(**{'!activation': 'relu', '!se_activation': 'relu'}):
+            return creator(num_classes)
+
+    PREDEFINED_SUFFIXES = {'Relu6': _with_relu6, 'Relu': _with_relu}
 
     @staticmethod
     def create(model_name, num_classes):
