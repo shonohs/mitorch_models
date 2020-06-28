@@ -14,6 +14,7 @@ class ModelFactory:
         'EfficientNetB6': lambda num_classes: Classifier(EfficientNetB6(), num_classes),
         'EfficientNetB7': lambda num_classes: Classifier(EfficientNetB7(), num_classes),
         'MobileNetV2': lambda num_classes: Classifier(MobileNetV2(), num_classes),
+        'MobileNetV2Test': lambda num_classes: MobileNetV2Test(num_classes),
         'MobileNetV3': lambda num_classes: Classifier(MobileNetV3(), num_classes),
         'MobileNetV3Small': lambda num_classes: Classifier(MobileNetV3Small(), num_classes),
         'ResNext14': lambda num_classes: Classifier(ResNext14(), num_classes),
