@@ -6,6 +6,10 @@ from .classifiertest import Classifier
 class MobileNetV2Test(Classifier):
     INPUT_SIZE = 224
 
+    @property
+    def version(self):
+        return {'MobileNetV2Test': (0, 1)}
+
     class BasicBlock(nn.Module):
         def __init__(self, in_planes, out_planes, expansion_factor, stride=1):
             super().__init__()
