@@ -3,6 +3,8 @@ from .base import ModuleBase
 
 
 class LinearAct(ModuleBase):
+    VERSION = (0, 1)
+
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.fc = torch.nn.Linear(in_channels, out_channels)
@@ -12,11 +14,13 @@ class LinearAct(ModuleBase):
         return self.activation(self.fc(input))
 
     def reset_parameters(self):
-        torch.nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='relu')
+        torch.nn.init.kaiming_normal_(self.fc.weight, mode='fan_in', nonlinearity='relu')
         torch.nn.init.zeros_(self.fc.bias)
 
 
 class Linear(ModuleBase):
+    VERSION = (0, 1)
+
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.fc = torch.nn.Linear(in_channels, out_channels)
@@ -25,5 +29,5 @@ class Linear(ModuleBase):
         return self.fc(x)
 
     def reset_parameters(self):
-        torch.nn.init.normal_(self.fc.weight, 0, 0.01)
+        torch.nn.init.kaiming_normal_(self.fc.weight, model='fan_in', nonlinearity='linear')
         torch.nn.init.zeros_(self.fc.bias)
