@@ -29,5 +29,5 @@ class Linear(ModuleBase):
         return self.fc(x)
 
     def reset_parameters(self):
-        torch.nn.init.kaiming_normal_(self.fc.weight, model='fan_in', nonlinearity='linear')
+        torch.nn.init.kaiming_normal_(self.fc.weight, mode='fan_in', nonlinearity='linear')
         torch.nn.init.zeros_(self.fc.bias)
