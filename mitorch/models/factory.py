@@ -194,35 +194,25 @@ class ModelFactory:
         'EfficientDetD7': 1536
     }
 
-    def _with_relu6(creator, num_classes):
-        # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
-        with set_module_settings(**{'!activation': 'relu6', '!se_activation': 'relu6'}):
-            return creator(num_classes)
-
-    def _with_relu(creator, num_classes):
-        # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
-        with set_module_settings(**{'!activation': 'relu', '!se_activation': 'relu'}):
-            return creator(num_classes)
-
-    PREDEFINED_SUFFIXES = {'Relu6': _with_relu6, 'Relu': _with_relu}
+    MODEL_OPTIONS = {'relu6': {'!activation': 'relu6', '!se_activation': 'relu6'},  # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
+                     'relu': {'!activation': 'relu', '!se_activation': 'relu'},  # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
+                     'sync_bn': {'!sync_bn': True}}
 
     @staticmethod
-    def create(model_name, num_classes):
+    def create(model_name, num_classes, options=[]):
         model = None
         creator = ModelFactory.PREDEFINED_MODELS.get(model_name)
-        if creator:
-            model = creator(num_classes)
-        else:
-            for suffix in ModelFactory.PREDEFINED_SUFFIXES:
-                if model_name.endswith(suffix):
-                    creator = ModelFactory.PREDEFINED_MODELS.get(model_name[:-len(suffix)])
-                    if creator:
-                        model = ModelFactory.PREDEFINED_SUFFIXES[suffix](creator, num_classes)
-                        model_name = model_name[:-len(suffix)]
-                        break
-
-        if not model:
+        if not creator:
             raise NotImplementedError(f"Unknown model name: {model_name}")
+
+        invalid_options = [o for o in options if o not in ModelFactory.MODEL_OPTIONS]
+        if invalid_options:
+            raise NotImplementedError(f"Invalid model options: {invalid_options}")
+
+        model_options = {k: v for o in options for k, v in ModelFactory.MODEL_OPTIONS[o].items()}
+
+        with set_module_settings(**model_options):
+            model = creator(num_classes)
 
         model.reset_parameters()
 
