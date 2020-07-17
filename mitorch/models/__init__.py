@@ -1,7 +1,6 @@
 from .classifier import Classifier
 from .efficientnet import EfficientNetB0, EfficientNetB1, EfficientNetB2, EfficientNetB3, EfficientNetB4, EfficientNetB5, EfficientNetB6, EfficientNetB7
 from .mobilenetv2 import MobileNetV2
-from .mobilenetv2test import MobileNetV2Test
 from .mobilenetv3 import MobileNetV3, MobileNetV3Small
 from .resnext import ResNext14, ResNext26, ResNext50, ResNext101
 from .retinanet import RetinaNet
@@ -18,7 +17,7 @@ from .heads import BidirectionalFeaturePyramidNetwork, FeaturePyramidNetwork, Fe
 
 __all__ = ['Classifier',
            'EfficientNetB0', 'EfficientNetB1', 'EfficientNetB2', 'EfficientNetB3', 'EfficientNetB4', 'EfficientNetB5', 'EfficientNetB6', 'EfficientNetB7',
-           'MobileNetV2', 'MobileNetV3', 'MobileNetV3Small', 'MobileNetV2Test',
+           'MobileNetV2', 'MobileNetV3', 'MobileNetV3Small',
            'ResNext14', 'ResNext26', 'ResNext50', 'ResNext101',
            'RetinaNet', 'RetinaNetLite',
            'SEResNext14', 'SEResNext26', 'SEResNext50', 'SEResNext101',
