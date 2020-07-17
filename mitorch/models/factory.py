@@ -196,7 +196,8 @@ class ModelFactory:
 
     MODEL_OPTIONS = {'relu6': {'!activation': 'relu6', '!se_activation': 'relu6'},  # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
                      'relu': {'!activation': 'relu', '!se_activation': 'relu'},  # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
-                     'sync_bn': {'!sync_bn': True}}
+                     'sync_bn': {'!sync_bn': True},
+                     'multilabel': {'!multilabel': True}}
 
     @staticmethod
     def create(model_name, num_classes, options=[]):

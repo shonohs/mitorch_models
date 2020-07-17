@@ -15,13 +15,18 @@ pip install mitorch-models
 ## Classification
 ```python
 from mitorch.models import ModelFactory
+# For multi-class classification. i.e. use Softmax
 model = ModelFactory.create('MobileNetV3', 1000)  # Model name and the number of classes.
+# For multi-label classification. i.e. use Sigmoid
+model = ModelFactory.create('MobileNetV3', 1000, ['multilabel'])  # Model name and the number of classes.
 
 input_size = model.INPUT_SIZE  # Recommended input size.
 inputs = torch.randn(1, 3, input_size, input_size, dtype=torch.float)
 outputs = model(inputs)
-# Unlike Object Detection models, Loss and Predictor is not included for classification models.
-# Please use appropriate layers such as Softmax or Sigmoid.
+
+# Get a training loss. For multiclass, loss=CrossEntropyLoss. For multilabel, loss=BCEWithLogitsLoss.
+loss = model.loss(outputs, targets)
+prediction = model.predictor(outputs)
 ```
 
 ## Object Detection
@@ -64,7 +69,7 @@ For more details, please see mitorch framework.
 * SSDLite
 * RetinaNet (in preview)
 
-# Benchmarks
+# Inference Benchmarks
 
 Name | Model size (1 class) | input = 224 | input = 500 | input = 500 (gpu) |
 :--- | :------------------- | :---------- | :---------- | :---------------- |
