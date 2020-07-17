@@ -23,9 +23,9 @@ class MobileNetV2(Model):
 
     @default_module_settings(activation='relu6')
     def __init__(self, width_multiplier=1):
-        super().__init__(output_dim=1280)
-
         m = width_multiplier
+        super().__init__(output_dim=int(1280 * m))
+
         self.features = torch.nn.Sequential(collections.OrderedDict([
             ('conv0', Conv2dAct(3, int(32 * m), kernel_size=3, padding=1, stride=2)),
             ('block0_0', MobileNetV2.BasicBlock(int(32 * m), int(16 * m), expansion_factor=1)),

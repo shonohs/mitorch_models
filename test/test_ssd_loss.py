@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 import torch
-from mitorch.models.modules import SSDLoss
+from mitorch.models.modules import SSDLoss, SSDSigmoidLoss
 
 
 class TestSSDLoss(unittest.TestCase):
@@ -63,6 +63,38 @@ class TestSSDLoss(unittest.TestCase):
         target = [[], [[0, 0, 0, 1, 1]]]
         loss = ssd_loss.forward(predictions, target)
         self.assertNotEqual(loss, 0)
+
+
+class TestSSDSigmoidLoss(unittest.TestCase):
+    def test_hard_negative_mining(self):
+        def gen_prior_box(x):
+            return [[0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1]]  # Dummy
+
+        ssd_loss = SSDSigmoidLoss(3, gen_prior_box)
+
+        pred_classification = torch.tensor([[[0, 0, 0], [1, 1, 1], [0.5, 0.5, 0.5]]])
+        target_classification = torch.tensor([[0, 0, 1]])
+        mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=0)
+        self.assertEqual(mask.tolist(), [[False, False, True]])
+
+        mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=1)
+        self.assertEqual(mask.tolist(), [[False, True, True]])
+
+        mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=2)
+        self.assertEqual(mask.tolist(), [[True, True, True]])
+
+    def test_one_hot(self):
+        target = torch.tensor([0, 1, 2, 3])
+        result = SSDSigmoidLoss._get_one_hot(target, 3, torch.float, target.layout, target.device)
+        self.assertTrue(torch.all(result == torch.tensor([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])))
+
+        target = torch.tensor([0])
+        result = SSDSigmoidLoss._get_one_hot(target, 3, torch.float, target.layout, target.device)
+        self.assertTrue(torch.all(result == torch.tensor([[0, 0, 0]])))
+
+        target = torch.tensor([0, 0])
+        result = SSDSigmoidLoss._get_one_hot(target, 3, torch.float, target.layout, target.device)
+        self.assertTrue(torch.all(result == torch.tensor([[0, 0, 0], [0, 0, 0]])))
 
 
 if __name__ == '__main__':

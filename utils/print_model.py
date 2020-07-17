@@ -1,6 +1,4 @@
 import argparse
-import pathlib
-import torch
 from mitorch.models import ModelFactory
 
 

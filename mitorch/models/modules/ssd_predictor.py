@@ -7,7 +7,7 @@ class SSDPredictor(ModuleBase):
     def __init__(self, num_classes, prior_box):
         super().__init__()
         self.num_classes = num_classes
-        self.num_classifier = num_classes + 1
+        self.num_classifiers = num_classes + 1
         self.prior_box = prior_box
 
         self.max_detections = 10
@@ -19,13 +19,8 @@ class SSDPredictor(ModuleBase):
     def reshape_ssd_predictions(self, predictions):
         num_batch = len(predictions[0][0])
 
-        pred_location = []
-        pred_classification = []
-        for loc, cls in predictions:
-            loc = loc.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, 4)
-            cls = cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifier)
-            pred_location.append(loc)
-            pred_classification.append(cls)
+        pred_location = [loc.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, 4) for loc, _ in predictions]
+        pred_classification = [cls.permute(0, 2, 3, 1).contiguous().view(num_batch, -1, self.num_classifiers) for _, cls in predictions]
         return (torch.cat(pred_location, dim=1), torch.cat(pred_classification, dim=1))
 
     def predict_class(self, pred_classification):
@@ -66,3 +61,12 @@ class SSDPredictor(ModuleBase):
             result = [[int(classes[i]), float(probs[i]), float(boxes[i][0]), float(boxes[i][1]), float(boxes[i][2]), float(boxes[i][3])] for i in range(len(boxes))]
             final_results.append(result)
         return final_results
+
+
+class SSDSigmoidPredictor(SSDPredictor):
+    def __init__(self, num_classes, prior_box):
+        super().__init__(num_classes, prior_box)
+        self.num_classifiers = num_classes
+
+    def predict_class(self, pred_classification):
+        return torch.sigmoid(pred_classification)
