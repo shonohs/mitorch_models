@@ -24,5 +24,6 @@ class TestModelFactory(unittest.TestCase):
         self.assertTrue(any(isinstance(m, torch.nn.SyncBatchNorm) for m in model.modules()))
         self.assertFalse(any(isinstance(m, torch.nn.BatchNorm2d) for m in model.modules()))
 
+
 if __name__ == '__main__':
     unittest.main()
