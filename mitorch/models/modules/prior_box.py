@@ -4,6 +4,7 @@ from .base import ModuleBase
 
 
 class PriorBox(ModuleBase):
+    VERSION = (0, 1)
     def __init__(self, num_scales, aspect_ratios=[2, 3]):
         super().__init__()
         self.num_scales = num_scales
@@ -35,8 +36,7 @@ class PriorBox(ModuleBase):
                     cy = (y + 0.5) / shape[0]
                     prior_boxes.extend(self._make_boxes(cx, cy, i))
 
-        prior_boxes = torch.Tensor(prior_boxes).detach().to(input[0][0].device)
-        return torch.clamp(prior_boxes, min=0, max=1)
+        return torch.Tensor(prior_boxes).detach().to(input[0][0].device)
 
     def _make_boxes(self, cx, cy, index):
         if self.num_scales == 1:
