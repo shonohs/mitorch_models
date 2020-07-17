@@ -27,7 +27,9 @@ class TestPriorBox(unittest.TestCase):
         self.assertFalse(torch.isinf(boxes).any())
 
         centers = (boxes[:, 0:2] + boxes[:, 2:]) / 2
-        self.assertEqual(centers.tolist(), [[0.5, 0.5], [0.5, 0.5], [0.5, 0.5], [0.5, 0.5]])
+        for center in centers.tolist():
+            self.assertAlmostEqual(center[0], 0.5)
+            self.assertAlmostEqual(center[1], 0.5)
 
     def test_wrong_scale_order(self):
         prior_box = PriorBox(1, aspect_ratios=[2])
