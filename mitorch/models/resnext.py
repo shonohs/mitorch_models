@@ -2,7 +2,7 @@
 import collections
 import torch
 from .model import Model
-from .modules import Add, Conv2dAct, Conv2dBN, default_module_settings
+from .modules import Activation, Add, Conv2dAct, Conv2dBN, default_module_settings
 
 
 class ResNext(Model):
@@ -16,7 +16,7 @@ class ResNext(Model):
 
             self.conv_shortcut = Conv2dBN(in_channels, out_channels, kernel_size=1, stride=stride) if in_channels != out_channels or stride != 1 else None
             self.add = Add()
-            self.activation = torch.nn.ReLU()
+            self.activation = Activation()
 
         def forward(self, input):
             x = self.conv0(input)
@@ -72,3 +72,8 @@ class ResNext50(ResNext):
 class ResNext101(ResNext):
     def __init__(self):
         super().__init__([3, 4, 23, 3])
+
+
+class ResNext152(ResNext):
+    def __init__(self):
+        super().__init__([3, 8, 36, 3])

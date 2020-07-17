@@ -16,6 +16,11 @@ class ModelFactory:
         'MobileNetV2': lambda num_classes: Classifier(MobileNetV2(), num_classes),
         'MobileNetV3': lambda num_classes: Classifier(MobileNetV3(), num_classes),
         'MobileNetV3Small': lambda num_classes: Classifier(MobileNetV3Small(), num_classes),
+        'ResNet18': lambda num_classes: Classifier(ResNet18(), num_classes),
+        'ResNet34': lambda num_classes: Classifier(ResNet34(), num_classes),
+        'ResNet50': lambda num_classes: Classifier(ResNet50(), num_classes),
+        'ResNet101': lambda num_classes: Classifier(ResNet101(), num_classes),
+        'ResNet152': lambda num_classes: Classifier(ResNet152(), num_classes),
         'ResNext14': lambda num_classes: Classifier(ResNext14(), num_classes),
         'ResNext26': lambda num_classes: Classifier(ResNext26(), num_classes),
         'ResNext50': lambda num_classes: Classifier(ResNext50(), num_classes),
@@ -163,6 +168,11 @@ class ModelFactory:
         'MobileNetV2': 224,
         'MobileNetV3': 224,
         'MobileNetV3Small': 224,
+        'ResNet18': 224,
+        'ResNet34': 224,
+        'ResNet50': 224,
+        'ResNet101': 224,
+        'ResNet152': 224,
         'ResNext14': 224,
         'ResNext26': 224,
         'ResNext50': 224,
@@ -205,11 +215,11 @@ class ModelFactory:
         if not creator:
             raise NotImplementedError(f"Unknown model name: {model_name}")
 
-        invalid_options = [o for o in options if o not in ModelFactory.MODEL_OPTIONS]
+        invalid_options = [o for o in options if o not in ModelFactory.MODEL_OPTIONS] if options else []
         if invalid_options:
             raise NotImplementedError(f"Invalid model options: {invalid_options}")
 
-        model_options = {k: v for o in options for k, v in ModelFactory.MODEL_OPTIONS[o].items()}
+        model_options = {k: v for o in options for k, v in ModelFactory.MODEL_OPTIONS[o].items()} if options else {}
 
         with set_module_settings(**model_options):
             model = creator(num_classes)

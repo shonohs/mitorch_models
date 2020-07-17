@@ -1,4 +1,4 @@
-from .activation import HardSwish, HardSigmoid
+from .activation import Activation, HardSwish, HardSigmoid
 from .addition import Add
 from .base import ModuleBase, default_module_settings, set_module_settings, get_module_settings
 from .convolution import Conv2dBN, Conv2dAct, Conv2d
@@ -14,7 +14,7 @@ from .shuffle import ChannelShuffle
 from .ssd_loss import SSDLoss, SSDSigmoidLoss
 from .ssd_predictor import SSDPredictor, SSDSigmoidPredictor
 
-__all__ = ['HardSwish', 'HardSigmoid', 'Add', 'ModuleBase', 'default_module_settings', 'set_module_settings', 'get_module_settings',
+__all__ = ['Activation', 'HardSwish', 'HardSigmoid', 'Add', 'ModuleBase', 'default_module_settings', 'set_module_settings', 'get_module_settings',
            'Conv2dBN', 'Conv2dAct', 'Conv2d', 'DepthwiseSeparableConv2d',
            'FocalLoss', 'LinearAct', 'Linear', 'MBConv', 'PriorBox', 'RetinaPredictor', 'RetinaPriorBox', 'SEBlock',
            'ChannelShuffle', 'SSDLoss', 'SSDSigmoidLoss', 'SSDPredictor', 'SSDSigmoidPredictor']

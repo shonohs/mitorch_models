@@ -60,6 +60,7 @@ For more details, please see mitorch framework.
 * MobileNetV3Small
 * ShuffleNet
 * ShuffleNetV2
+* ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 * ResNext14, ResNext26, ResNext50, ResNext101
 * SEResNext14, SEResNext26, SEResNext50, SEResNext101
 * EfficientNetB0, EfficientNetB1, EfficientNetB2, EfficientNetB3, EfficientNetB4, EfficientNetB5, EfficientNetB6, EfficientNetB7

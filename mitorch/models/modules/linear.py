@@ -1,4 +1,5 @@
 import torch
+from .activation import Activation
 from .base import ModuleBase, default_module_settings
 
 
@@ -12,7 +13,7 @@ class LinearAct(ModuleBase):
 
         self.fc = torch.nn.Linear(in_channels, out_channels)
         self.bn = (torch.nn.SyncBatchNorm if sync_bn else torch.nn.BatchNorm2d)(out_channels) if use_bn else None
-        self.activation = torch.nn.ReLU()
+        self.activation = Activation()
 
     def forward(self, input):
         x = self.fc(input)

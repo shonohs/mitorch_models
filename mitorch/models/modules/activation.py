@@ -1,5 +1,22 @@
 import torch
-from .base import ModuleBase
+from .base import ModuleBase, default_module_settings
+
+
+class Activation(ModuleBase):
+    @default_module_settings(activation='relu')
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        activation = self.module_settings['activation']
+
+        act_class = {'relu': torch.nn.ReLU,
+                     'relu6': torch.nn.ReLU6,
+                     'hswish': HardSwish,
+                     'swish': Swish,
+                     'none': None}[activation]
+        self.activation = act_class()
+
+    def forward(self, x):
+        return self.activation(x)
 
 
 class Swish(ModuleBase):

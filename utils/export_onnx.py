@@ -16,8 +16,8 @@ class PredictionModel(torch.nn.Module):
         return x
 
 
-def export_onnx(model_name, num_classes, weights_filepath, with_predictor, output_filepath):
-    model = ModelFactory.create(model_name, num_classes)
+def export_onnx(model_name, num_classes, weights_filepath, with_predictor, output_filepath, model_options):
+    model = ModelFactory.create(model_name, num_classes, model_options)
     if weights_filepath:
         print(f"Loading {weights_filepath}")
         weights = torch.load(weights_filepath, map_location=torch.device('cpu'))
@@ -37,6 +37,7 @@ def main():
     parser.add_argument('--weights', '-w')
     parser.add_argument('--with_predictor', '-p', action='store_true', help="Include a predictor")
     parser.add_argument('--output_filepath', '-o', type=pathlib.Path, default=None)
+    parser.add_argument('--model_options', '-m', nargs='+')
 
     args = parser.parse_args()
     if not args.output_filepath:
@@ -45,7 +46,7 @@ def main():
     if args.output_filepath.exists():
         parser.error(f"Output filepath already exists: {args.output_filepath}")
 
-    export_onnx(args.model_name, args.num_classes, args.weights, args.with_predictor, args.output_filepath)
+    export_onnx(args.model_name, args.num_classes, args.weights, args.with_predictor, args.output_filepath, args.model_options)
 
 
 if __name__ == '__main__':
