@@ -73,6 +73,7 @@ class ModelFactory:
         'EfficientNetB6-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB6()), num_classes),
         'EfficientNetB7-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(EfficientNetB7()), num_classes),
         'MobileNetV2-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV2()), num_classes),
+        'MobileNetV2-FPNLite-Sigmoid-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV2()), num_classes, use_sigmoid=True),
         'MobileNetV3-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV3()), num_classes),
         'MobileNetV3Small-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV3Small()), num_classes),
 
@@ -193,6 +194,7 @@ class ModelFactory:
         'SEResNext101-SSDLite': 320,
         'ShuffleNetV2-SSDLite': 320,
         'VGG16-SSDLite': 320,
+        'MobileNetV2-FPNLite-Sigmoid-SSDLite': 320,
         'EfficientDetD0': 512,
         'EfficientDetD1': 640,
         'EfficientDetD2': 768,
