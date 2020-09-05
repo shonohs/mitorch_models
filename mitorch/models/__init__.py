@@ -14,7 +14,7 @@ from .ssd_lite import SSDLite
 from .vgg import VGG_A, VGG_B, VGG_C, VGG_D, VGG_E, VGG16, VGG16ForSSD
 
 from .factory import ModelFactory
-from .heads import BidirectionalFeaturePyramidNetwork, FeaturePyramidNetwork, FeaturePyramidNetworkLite, MnasFPN, SSDLiteExtraLayers
+from .heads import BidirectionalFeaturePyramidNetwork, FeaturePyramidNetwork, FeaturePyramidNetworkLite, MnasFPN, SSDLiteExtraLayers, SSDLiteExtraLayers3
 
 __all__ = ['Classifier',
            'EfficientNetB0', 'EfficientNetB1', 'EfficientNetB2', 'EfficientNetB3', 'EfficientNetB4', 'EfficientNetB5', 'EfficientNetB6', 'EfficientNetB7',
@@ -25,4 +25,4 @@ __all__ = ['Classifier',
            'SEResNext14', 'SEResNext26', 'SEResNext50', 'SEResNext101',
            'ShuffleNet', 'ShuffleNetV2', 'SqueezeNet', 'SSDLite',
            'VGG_A', 'VGG_B', 'VGG_C', 'VGG_D', 'VGG_E', 'VGG16', 'VGG16ForSSD', 'ModelFactory',
-           'BidirectionalFeaturePyramidNetwork', 'FeaturePyramidNetwork', 'FeaturePyramidNetworkLite', 'MnasFPN', 'SSDLiteExtraLayers']
+           'BidirectionalFeaturePyramidNetwork', 'FeaturePyramidNetwork', 'FeaturePyramidNetworkLite', 'MnasFPN', 'SSDLiteExtraLayers', 'SSDLiteExtraLayers3']

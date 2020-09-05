@@ -5,6 +5,7 @@ from .base import ModuleBase
 
 class PriorBox(ModuleBase):
     VERSION = (0, 1)
+
     def __init__(self, num_scales, aspect_ratios=[2, 3]):
         super().__init__()
         self.num_scales = num_scales
