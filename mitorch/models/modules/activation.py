@@ -13,7 +13,7 @@ class Activation(ModuleBase):
                      'hswish': HardSwish,
                      'swish': Swish,
                      'none': None}[activation]
-        self.activation = act_class()
+        self.activation = act_class and act_class()
 
     def forward(self, x):
         return self.activation(x)

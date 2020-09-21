@@ -1,9 +1,11 @@
 import torch
 from .head import Head
-from ..modules import Add, Conv2dAct
+from ..modules import Activation, Add, Conv2dAct
 
 
 class FeaturePyramidNetwork(Head):
+    VERSION = (1, 0)
+
     def __init__(self, backbone, out_channels=256):
         super().__init__(backbone, [5, 4, 3], [out_channels] * 5)
         base_output_shapes = backbone.get_output_shapes(self.base_feature_names)
@@ -23,7 +25,7 @@ class FeaturePyramidNetwork(Head):
 
         self.add0 = Add()
         self.add1 = Add()
-        self.activation = torch.nn.ReLU()
+        self.activation = Activation()
 
     def forward(self, input):
         base_features = self.get_base_features(input)
@@ -52,6 +54,8 @@ class FeaturePyramidNetwork(Head):
 
 
 class FeaturePyramidNetworkLite(Head):
+    VERSION = (1, 0)
+
     def __init__(self, backbone, out_channels=256):
         super().__init__(backbone, [5, 4, 3], [out_channels] * 5)
         base_output_shapes = Head.get_base_output_shapes(backbone, [5, 4, 3])
@@ -76,7 +80,7 @@ class FeaturePyramidNetworkLite(Head):
 
         self.add0 = Add()
         self.add1 = Add()
-        self.activation = torch.nn.ReLU()
+        self.activation = Activation()
 
     def forward(self, input):
         base_features = self.get_base_features(input)
