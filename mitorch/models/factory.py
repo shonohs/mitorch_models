@@ -75,6 +75,7 @@ class ModelFactory:
         'MobileNetV2-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV2()), num_classes),
         'MobileNetV2-FPNLite-Sigmoid-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV2()), num_classes, use_sigmoid=True),
         'MobileNetV3-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV3()), num_classes),
+        'MobileNetV2-FPNLite4-Sigmoid-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite4(MobileNetV2()), num_classes, use_sigmoid=True),
         'MobileNetV3Small-FPNLite-SSDLite': lambda num_classes: SSDLite(FeaturePyramidNetworkLite(MobileNetV3Small()), num_classes),
 
         'EfficientNetB0-MnasFPN-SSDLite': lambda num_classes: SSDLite(MnasFPN(EfficientNetB0()), num_classes),
