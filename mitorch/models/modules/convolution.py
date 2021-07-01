@@ -1,16 +1,11 @@
 import torch
-from .base import ModuleBase, default_module_settings
+from .base import ModuleBase
 from .activation import HardSwish, Swish
 
 
 class Conv2dAct(ModuleBase):
-    VERSION = (1, 1)
-    @default_module_settings(use_bn=True, sync_bn=False, activation='relu')
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, **kwargs):
-        super().__init__(**kwargs)
-        use_bn = self.module_settings['use_bn']
-        sync_bn = self.module_settings['sync_bn']
-        activation = self.module_settings['activation']
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, use_bn=True, sync_bn=False, activation='relu'):
+        super().__init__()
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -53,11 +48,8 @@ class Conv2dAct(ModuleBase):
 
 
 class Conv2dBN(ModuleBase):
-    VERSION = (1, 0)
-    @default_module_settings(sync_bn=False)
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, **kwargs):
-        super().__init__(**kwargs)
-        sync_bn = self.module_settings['sync_bn']
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, sync_bn=False):
+        super().__init__()
         self.conv = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias=False)
         self.bn = (torch.nn.SyncBatchNorm if sync_bn else torch.nn.BatchNorm2d)(out_channels)
 

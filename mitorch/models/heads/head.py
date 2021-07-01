@@ -5,6 +5,9 @@ class Head(Model):
     """Networks to extract features from base model.
     Input and output is single or multi scale features.
     """
+
+    # The module names that have C3, C4, C5 features.
+    # It's not ideal to have those model-specific information here. But I couldn't find a way to move those info into models without sacrificing their simplicity.
     BASE_FEATURE_MAPS = {'EfficientNetB0': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},
                          'EfficientNetB1': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},
                          'EfficientNetB2': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},

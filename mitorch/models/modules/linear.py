@@ -1,14 +1,10 @@
 import torch
-from .base import ModuleBase, default_module_settings
+from .base import ModuleBase
 
 
 class LinearAct(ModuleBase):
-    VERSION = (0, 1)
-    @default_module_settings(use_bn=True, sync_bn=False)
-    def __init__(self, in_channels, out_channels, **kwargs):
-        super().__init__(**kwargs)
-        use_bn = self.module_settings['use_bn']
-        sync_bn = self.module_settings['sync_bn']
+    def __init__(self, in_channels, out_channels, use_bn=True, sync_bn=False):
+        super().__init__()
 
         self.fc = torch.nn.Linear(in_channels, out_channels)
         self.bn = (torch.nn.SyncBatchNorm if sync_bn else torch.nn.BatchNorm2d)(out_channels) if use_bn else None
@@ -26,8 +22,6 @@ class LinearAct(ModuleBase):
 
 
 class Linear(ModuleBase):
-    VERSION = (0, 1)
-
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.fc = torch.nn.Linear(in_channels, out_channels)

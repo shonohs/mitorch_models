@@ -1,7 +1,7 @@
 import math
 import torch
 from .model import Model
-from .modules import DepthwiseSeparableConv2d, PriorBox, SSDLoss, SSDSigmoidLoss, SSDPredictor, SSDSigmoidPredictor, default_module_settings, ModuleBase
+from .modules import DepthwiseSeparableConv2d, PriorBox, SSDLoss, SSDSigmoidLoss, SSDPredictor, SSDSigmoidPredictor, ModuleBase
 
 
 class SSDLite(Model):
@@ -24,7 +24,6 @@ class SSDLite(Model):
             pi = 0.01
             self.conv_cls.pointwise_conv.conv.bias.data.fill_(-math.log((1 - pi) / pi))
 
-    @default_module_settings(use_bn=True)
     def __init__(self, backbone, num_classes, prior_box=None, use_sigmoid=False):
         super().__init__(None)
         self.base_model = backbone

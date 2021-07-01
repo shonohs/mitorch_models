@@ -3,7 +3,7 @@ import collections
 import math
 import torch
 from .model import Model
-from .modules import Conv2dAct, MBConv, default_module_settings
+from .modules import Conv2dAct, MBConv
 
 
 class EfficientNet(Model):
@@ -18,7 +18,6 @@ class EfficientNet(Model):
         [6, 3, 192, 320, 1, 1]
     ]
 
-    @default_module_settings(se_activation='swish', activation='swish')
     def __init__(self, width_multiplier=1, depth_multiplier=1, dropout_ratio=0.2):
         m = width_multiplier
         super().__init__(round(1280 * m / 8) * 8)
@@ -28,9 +27,9 @@ class EfficientNet(Model):
 
         stages = [s for i in range(len(self.BASIC_CONFIG)) for s in self._make_stage(i)]
 
-        self.features = torch.nn.Sequential(collections.OrderedDict([('conv0', Conv2dAct(3, round(32 * m / 8) * 8, kernel_size=3, padding=1, stride=2))]
+        self.features = torch.nn.Sequential(collections.OrderedDict([('conv0', Conv2dAct(3, round(32 * m / 8) * 8, kernel_size=3, padding=1, stride=2, activation='swish'))]
                                                                     + stages
-                                                                    + [('conv1', Conv2dAct(round(320 * m / 8) * 8, round(1280 * m / 8) * 8, kernel_size=1)),
+                                                                    + [('conv1', Conv2dAct(round(320 * m / 8) * 8, round(1280 * m / 8) * 8, kernel_size=1, activation='swish')),
                                                                        ('pool0', torch.nn.AdaptiveAvgPool2d(1)),
                                                                        ('dropout0', torch.nn.Dropout(dropout_ratio)),
                                                                        ('flatten', torch.nn.Flatten())]))
@@ -42,7 +41,7 @@ class EfficientNet(Model):
         expansion_planes = round(in_planes * expansion_factor / 8) * 8
         blocks = []
         for i in range(int(math.ceil(num_layers * self.depth_multiplier))):
-            blocks.append((f'block{index}_{i}', MBConv(in_planes, out_planes, expansion_planes, kernel_size=kernel_size, stride=stride)))
+            blocks.append((f'block{index}_{i}', MBConv(in_planes, out_planes, expansion_planes, kernel_size=kernel_size, stride=stride, activation='swish', se_activation='swish')))
             stride = 1
             in_planes = out_planes
 

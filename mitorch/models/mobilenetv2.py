@@ -2,7 +2,7 @@
 import collections
 import torch
 from .model import Model
-from .modules import Add, Conv2dAct, DepthwiseSeparableConv2d, default_module_settings
+from .modules import Add, Conv2dAct, DepthwiseSeparableConv2d
 
 
 class MobileNetV2(Model):
@@ -10,8 +10,8 @@ class MobileNetV2(Model):
         def __init__(self, in_channels, out_channels, expansion_factor, stride=1):
             super().__init__()
             intermediate_channels = in_channels * expansion_factor
-            self.conv0 = Conv2dAct(in_channels, intermediate_channels, kernel_size=1)
-            self.conv1 = DepthwiseSeparableConv2d(intermediate_channels, out_channels, kernel_size=3, stride=stride, padding=1, activation2='none')
+            self.conv0 = Conv2dAct(in_channels, intermediate_channels, kernel_size=1, activation='relu6')
+            self.conv1 = DepthwiseSeparableConv2d(intermediate_channels, out_channels, kernel_size=3, stride=stride, padding=1, activation='relu6', activation2='none')
             self.residual = Add() if stride == 1 and in_channels == out_channels else None
 
         def forward(self, input):
@@ -21,7 +21,6 @@ class MobileNetV2(Model):
                 x = self.residual(x, input)
             return x
 
-    @default_module_settings(activation='relu6')
     def __init__(self, width_multiplier=1):
         m = width_multiplier
         super().__init__(output_dim=int(1280 * m))

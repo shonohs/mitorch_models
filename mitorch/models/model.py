@@ -1,14 +1,8 @@
 import functools
 import torch
-from .modules.base import ModuleBase
 
 
 class Model(torch.nn.Module):
-    # (Major version, Minor version).
-    # Major version updates can change the training results.
-    # Minor version updates doesn't have impact on model outputs. e.g. module name changes.
-    VERSION = (0, 0)
-
     def __init__(self, output_dim):
         super().__init__()
         self.output_dim = output_dim
@@ -18,16 +12,6 @@ class Model(torch.nn.Module):
         input = torch.randn(1, 3, 224, 224)
         outputs = self.forward(input, output_names)
         return [o.shape[1] for o in outputs]
-
-    @property
-    def version(self):
-        versions = {}
-        for m in self.modules():
-            if isinstance(m, (Model, ModuleBase)):
-                module_name = type(m).__name__
-                module_version = m.VERSION
-                versions[module_name] = module_version
-        return versions
 
     def forward(self, input, output_names=None):
         if not output_names:
@@ -47,6 +31,7 @@ class Model(torch.nn.Module):
 
             for hook in forward_hooks:
                 hook.remove()
+
             assert all([o is not None for o in self._outputs])
             return self._outputs
 
@@ -63,9 +48,10 @@ class Model(torch.nn.Module):
         return current
 
     def _extract_outputs_hook(self, module, input, output, index):
+        assert self._outputs[index] is None
         self._outputs[index] = output
 
     def reset_parameters(self):
-        for m in self.modules():
-            if isinstance(m, ModuleBase):
+        for m in self.children():
+            if hasattr(m, 'reset_parameters'):
                 m.reset_parameters()

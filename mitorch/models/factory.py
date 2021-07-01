@@ -1,6 +1,5 @@
 from . import *
 from .heads import *
-from .modules import set_module_settings
 
 
 class ModelFactory:
@@ -193,11 +192,6 @@ class ModelFactory:
         'EfficientDetD7': 1536
     }
 
-    MODEL_OPTIONS = {'relu6': {'!activation': 'relu6', '!se_activation': 'relu6'},  # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
-                     'relu': {'!activation': 'relu', '!se_activation': 'relu'},  # 'activation2' in DepthwiseConvolution2d doesn't require overwrite.
-                     'sync_bn': {'!sync_bn': True},
-                     'multilabel': {'!multilabel': True}}
-
     @staticmethod
     def create(model_name, num_classes, options=[]):
         model = None
@@ -205,15 +199,10 @@ class ModelFactory:
         if not creator:
             raise NotImplementedError(f"Unknown model name: {model_name}")
 
-        invalid_options = [o for o in options if o not in ModelFactory.MODEL_OPTIONS]
-        if invalid_options:
-            raise NotImplementedError(f"Invalid model options: {invalid_options}")
+        if options:
+            raise NotImplementedError("Options are deprecated.")
 
-        model_options = {k: v for o in options for k, v in ModelFactory.MODEL_OPTIONS[o].items()}
-
-        with set_module_settings(**model_options):
-            model = creator(num_classes)
-
+        model = creator(num_classes)
         model.reset_parameters()
 
         if model_name in ModelFactory.RECOMMENDED_INPUT_SIZES:

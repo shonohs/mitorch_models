@@ -2,7 +2,7 @@
 import collections
 import torch
 from .model import Model
-from .modules import Add, Conv2dAct, Conv2dBN, default_module_settings
+from .modules import Add, Conv2dAct, Conv2dBN
 
 
 class ResNext(Model):
@@ -26,7 +26,6 @@ class ResNext(Model):
             x = self.add(x, self.conv_shortcut(input) if self.conv_shortcut else input)
             return self.activation(x)
 
-    @default_module_settings(use_bn=True)
     def __init__(self, num_blocks=[3, 4, 6, 3], cardinality=32, bottleneck_width=4):
         in_channels = 64
         out_channels = bottleneck_width * cardinality * 2
