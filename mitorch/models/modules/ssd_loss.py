@@ -18,6 +18,9 @@ class SSDLoss(ModuleBase):
         Args:
             pred_classification (N, num_prior, num_class+1)
             target_classification (N, num_prior)
+
+        Returns:
+            boolean tensor (N, num_prior)
         """
         assert len(pred_classification.shape) == 3 and pred_classification.shape[2] == self.num_classifiers
         assert len(target_classification.shape) == 2
@@ -65,7 +68,7 @@ class SSDLoss(ModuleBase):
             positive_iou_threshold: minimum IOU between a ground truth and a prior box to be considiered as matched.
         Returns: (target_location, target_labels)
             target_location (num_priors, 4)
-            target_labels (num_priors,)
+            target_labels (num_priors,): class_ids, 0 (background), or -1 (ignored)
         """
         assert negative_iou_threshold <= positive_iou_threshold
 
@@ -136,9 +139,7 @@ class SSDLoss(ModuleBase):
         """
         # Hard negative mining
         mask = self.hard_negative_mining(pred_classification, target_classification, self.neg_pos_ratio)  # Shape: (N, num_prior)
-        # Use 'sum' reduction since we divide the loss by num_positive later.
-        loss_classification = torch.nn.functional.cross_entropy(pred_classification[mask], target_classification[mask], reduction='sum')
-        return loss_classification
+        return torch.nn.functional.cross_entropy(pred_classification[mask], target_classification[mask], reduction='mean')
 
     def reshape_ssd_predictions(self, predictions):
         num_batch = len(predictions[0][0])
@@ -182,11 +183,10 @@ class SSDLoss(ModuleBase):
         if num_positive == 0:
             return torch.tensor(0, dtype=torch.float, requires_grad=True)
 
-        loss_location = torch.nn.functional.smooth_l1_loss(pred_location[positive_priors_index].view(-1, 4), target_location[positive_priors_index].view(-1, 4), reduction='sum')
+        loss_location = torch.nn.functional.smooth_l1_loss(pred_location[positive_priors_index].view(-1, 4), target_location[positive_priors_index].view(-1, 4), reduction='mean')
         loss_classification = self.loss_classification(pred_classification, target_classification)
 
-        loss = (loss_location + loss_classification) / num_positive
-        return loss
+        return loss_location + loss_classification
 
 
 class SSDSigmoidLoss(SSDLoss):
@@ -198,7 +198,7 @@ class SSDSigmoidLoss(SSDLoss):
     def hard_negative_mining(self, pred_classification, target_classification, neg_pos_ratio):
         """ Hard negative mining. Returns the indices for the selected entries.
         Args:
-            pred_classification (N, num_prior, num_class+1)
+            pred_classification (N, num_prior, num_classes)
             target_classification (N, num_prior)
         """
         assert len(pred_classification.shape) == 3 and pred_classification.shape[2] == self.num_classifiers
@@ -234,9 +234,8 @@ class SSDSigmoidLoss(SSDLoss):
         mask = self.hard_negative_mining(pred_classification, target_classification, self.neg_pos_ratio)  # Shape: (N, num_prior)
         target = self._get_one_hot(target_classification[mask], self.num_classes, pred_classification.dtype, pred_classification.layout, pred_classification.device)
 
-        # Use 'sum' reduction since we divide the loss by num_positive later.
         assert pred_classification[mask].shape == target.shape
-        return torch.nn.functional.binary_cross_entropy_with_logits(pred_classification[mask], target, reduction='sum')
+        return torch.nn.functional.binary_cross_entropy_with_logits(pred_classification[mask], target, reduction='mean')
 
     @staticmethod
     def _get_one_hot(target_classification, num_classes, dtype, layout, device):

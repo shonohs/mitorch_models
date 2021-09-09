@@ -64,24 +64,41 @@ class TestSSDLoss(unittest.TestCase):
         loss = ssd_loss.forward(predictions, target)
         self.assertNotEqual(loss, 0)
 
+    def test_hard_negative_mining(self):
+        def gen_prior_box(x):
+            return [[0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1]]  # Dummy
+
+        ssd_loss = SSDLoss(3, gen_prior_box)
+
+        pred_classification = torch.tensor([[[100, 0, 0, 0], [0, 1, 1, 1], [0.5, 0.5, 0.5, 0.5], [0.1, 0.5, 0.5, 0.7]]])
+        target_classification = torch.tensor([[0, 0, 1, 0]])
+        mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=0)
+        self.assertEqual(mask.tolist(), [[False, False, True, False]])
+
+        mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=1)
+        self.assertEqual(mask.tolist(), [[False, True, True, False]])
+
+        mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=2)
+        self.assertEqual(mask.tolist(), [[False, True, True, True]])
+
 
 class TestSSDSigmoidLoss(unittest.TestCase):
     def test_hard_negative_mining(self):
         def gen_prior_box(x):
-            return [[0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1]]  # Dummy
+            return [[0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 1, 1]]  # Dummy
 
         ssd_loss = SSDSigmoidLoss(3, gen_prior_box)
 
-        pred_classification = torch.tensor([[[0, 0, 0], [1, 1, 1], [0.5, 0.5, 0.5]]])
-        target_classification = torch.tensor([[0, 0, 1]])
+        pred_classification = torch.tensor([[[0, 0, 0], [1, 1, 1], [0.5, 0.5, 0.5], [0.5, 0.5, 0.7]]])  # Background score is 1, 0, 0.5, 0.3
+        target_classification = torch.tensor([[0, 0, 1, 0]])
         mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=0)
-        self.assertEqual(mask.tolist(), [[False, False, True]])
+        self.assertEqual(mask.tolist(), [[False, False, True, False]])
 
         mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=1)
-        self.assertEqual(mask.tolist(), [[False, True, True]])
+        self.assertEqual(mask.tolist(), [[False, True, True, False]])
 
         mask = ssd_loss.hard_negative_mining(pred_classification, target_classification, neg_pos_ratio=2)
-        self.assertEqual(mask.tolist(), [[True, True, True]])
+        self.assertEqual(mask.tolist(), [[False, True, True, True]])
 
     def test_one_hot(self):
         target = torch.tensor([0, 1, 2, 3])

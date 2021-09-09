@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='mitorch-models',
-                 version='0.0.4',
+                 version='0.0.5',
                  author='shono',
                  description='Collection of vision-related pytorch models with a focus on code readability',
                  url='https://github.com/shonohs/mitorch_models',
