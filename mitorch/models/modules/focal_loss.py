@@ -1,3 +1,6 @@
+"""
+"Focal Loss for Dense Object Detection" (https://arxiv.org/pdf/1708.02002.pdf)
+"""
 import torch
 from .ssd_loss import SSDSigmoidLoss
 
@@ -24,25 +27,25 @@ class FocalLoss(SSDSigmoidLoss):
         pred_classification = pred_classification.view(-1, self.num_classes)
         target_classification = target_classification.view(-1)
 
-        valid_indices = target_classification >= 0
-        pred_classification = pred_classification[valid_indices]
-        target_classification = target_classification[valid_indices]
+        # Ignore priors that are neither foreground or background.
+        # Note that it's guaranteed to have at least one foreground target.
+        valid_indexes = target_classification >= 0
+        pred_classification = pred_classification[valid_indexes]
+        target_classification = target_classification[valid_indexes]
 
-        if len(target_classification) == 0:
-            return torch.tensor(0, dtype=torch.float, requires_grad=True)
-
-        target = FocalLoss._get_one_hot(target_classification, self.num_classes,
-                                        pred_classification.dtype,
-                                        pred_classification.layout,
-                                        pred_classification.device)
-
+        target = FocalLoss._get_one_hot(target_classification, self.num_classes, pred_classification.dtype, pred_classification.layout, pred_classification.device)
         assert pred_classification.shape == target.shape
 
         # If y == 0, l = -log(1-sigmoid(x)). if y == 1, l = -log(sigmoid(x))
         ce = torch.nn.functional.binary_cross_entropy_with_logits(pred_classification, target, reduction='none')
-        pt = torch.exp(-ce)  # if y == 0, pt = 1 - sigmoid(x). if y == 1, pt = sigmoid(x)
+
+        p = torch.sigmoid(pred_classification)
+        pt = p * target + (1 - p) * (1 - target)  # if y == 0, pt = 1 - sigmoid(x). if y == 1, pt = sigmoid(x)
+        pt = pt.detach()
 
         assert ce.shape[0] == target.shape[0] and ce.shape[1] == target.shape[1]
         assert pt.shape[0] == target.shape[0] and pt.shape[1] == target.shape[1]
 
-        return (ce * self.alpha * ((1 - pt) ** self.gamma)).sum()
+        alpha_t = self.alpha * target + (1 - self.alpha) * (1 - target)
+
+        return (ce * alpha_t * ((1 - pt) ** self.gamma)).mean()

@@ -1,3 +1,7 @@
+"""RetinaNet
+
+https://arxiv.org/pdf/1708.02002.pdf
+"""
 import collections
 import math
 import torch
