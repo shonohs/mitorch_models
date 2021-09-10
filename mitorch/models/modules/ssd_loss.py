@@ -139,7 +139,7 @@ class SSDLoss(ModuleBase):
         """
         # Hard negative mining
         mask = self.hard_negative_mining(pred_classification, target_classification, self.neg_pos_ratio)  # Shape: (N, num_prior)
-        return torch.nn.functional.cross_entropy(pred_classification[mask], target_classification[mask], reduction='mean')
+        return torch.nn.functional.cross_entropy(pred_classification[mask], target_classification[mask], reduction='sum')
 
     def reshape_ssd_predictions(self, predictions):
         num_batch = len(predictions[0][0])
@@ -184,7 +184,7 @@ class SSDLoss(ModuleBase):
             return torch.tensor(0, dtype=torch.float, requires_grad=True)
 
         loss_location = torch.nn.functional.smooth_l1_loss(pred_location[positive_priors_index].view(-1, 4), target_location[positive_priors_index].view(-1, 4), reduction='mean')
-        loss_classification = self.loss_classification(pred_classification, target_classification)
+        loss_classification = self.loss_classification(pred_classification, target_classification) / num_positive
 
         return loss_location + loss_classification
 
@@ -235,7 +235,7 @@ class SSDSigmoidLoss(SSDLoss):
         target = self._get_one_hot(target_classification[mask], self.num_classes, pred_classification.dtype, pred_classification.layout, pred_classification.device)
 
         assert pred_classification[mask].shape == target.shape
-        return torch.nn.functional.binary_cross_entropy_with_logits(pred_classification[mask], target, reduction='mean')
+        return torch.nn.functional.binary_cross_entropy_with_logits(pred_classification[mask], target, reduction='sum')
 
     @staticmethod
     def _get_one_hot(target_classification, num_classes, dtype, layout, device):

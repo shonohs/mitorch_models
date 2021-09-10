@@ -47,5 +47,4 @@ class FocalLoss(SSDSigmoidLoss):
         assert pt.shape[0] == target.shape[0] and pt.shape[1] == target.shape[1]
 
         alpha_t = self.alpha * target + (1 - self.alpha) * (1 - target)
-
-        return (ce * alpha_t * ((1 - pt) ** self.gamma)).mean()
+        return (ce * alpha_t * ((1 - pt) ** self.gamma)).sum()
