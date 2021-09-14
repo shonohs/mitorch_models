@@ -18,7 +18,7 @@ class RetinaNet(Model):
 
         def _create_branch(self, in_channels, out_channels, num_blocks):
             return torch.nn.Sequential(collections.OrderedDict(
-                [(f'conv{i}', Conv2dAct(in_channels, in_channels, kernel_size=3, padding=1)) for i in range(num_blocks)]
+                [(f'conv{i}', Conv2dAct(in_channels, in_channels, kernel_size=3, padding=1, use_bn=False)) for i in range(num_blocks)]
                 + [(f'conv{num_blocks}', Conv2d(in_channels, out_channels, kernel_size=3, padding=1))]
             ))
 
@@ -58,6 +58,3 @@ class RetinaNet(Model):
 
         assert [f.shape[2] for f in features] == sorted([f.shape[2] for f in features], reverse=True)
         return [self.detection_block(feature) for feature in features]
-
-    def reset_parameters(self):
-        self.detection_block.reset_parameters()

@@ -43,8 +43,8 @@ class FocalLoss(SSDSigmoidLoss):
         pt = p * target + (1 - p) * (1 - target)  # if y == 0, pt = 1 - sigmoid(x). if y == 1, pt = sigmoid(x)
         pt = pt.detach()
 
-        assert ce.shape[0] == target.shape[0] and ce.shape[1] == target.shape[1]
-        assert pt.shape[0] == target.shape[0] and pt.shape[1] == target.shape[1]
-
         alpha_t = self.alpha * target + (1 - self.alpha) * (1 - target)
+        assert ce.shape == pt.shape == alpha_t.shape
+
+        # Quote from the paper: "We perform the normalization by the number of assigned anvhors, not total anchors, ..."
         return (ce * alpha_t * ((1 - pt) ** self.gamma)).sum()

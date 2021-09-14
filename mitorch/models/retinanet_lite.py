@@ -9,8 +9,8 @@ class RetinaNetLite(RetinaNet):
     class DetectionBlock(RetinaNet.DetectionBlock):
         def _create_branch(self, in_channels, out_channels, num_blocks):
             return torch.nn.Sequential(collections.OrderedDict(
-                [(f'conv{i}', DepthwiseSeparableConv2d(in_channels, in_channels, kernel_size=3, padding=1)) for i in range(num_blocks)]
-                + [(f'conv{num_blocks}', DepthwiseSeparableConv2d(in_channels, out_channels, kernel_size=3, padding=1, use_bn2=False, activation2='none'))]
+                [(f'conv{i}', DepthwiseSeparableConv2d(in_channels, in_channels, kernel_size=3, padding=1, use_bn=False, use_bn2=False)) for i in range(num_blocks)]
+                + [(f'conv{num_blocks}', DepthwiseSeparableConv2d(in_channels, out_channels, kernel_size=3, padding=1, use_bn=False, use_bn2=False, activation2='none'))]
             ))
 
         def reset_parameters(self):
