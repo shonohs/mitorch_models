@@ -4,6 +4,7 @@ from .heads import *
 
 class ModelFactory:
     PREDEFINED_MODELS = {
+        'Darknet19': lambda num_classes: Classifier(Darknet19(), num_classes),
         'EfficientNetB0': lambda num_classes: Classifier(EfficientNetB0(), num_classes),
         'EfficientNetB1': lambda num_classes: Classifier(EfficientNetB1(), num_classes),
         'EfficientNetB2': lambda num_classes: Classifier(EfficientNetB2(), num_classes),
@@ -26,6 +27,7 @@ class ModelFactory:
         'ShuffleNet': lambda num_classes: Classifier(ShuffleNet(), num_classes),
         'ShuffleNetV2': lambda num_classes: Classifier(ShuffleNetV2(), num_classes),
         'SqueezeNet': lambda num_classes: Classifier(SqueezeNet(), num_classes),
+        'TinyDarknet': lambda num_classes: Classifier(TinyDarknet(), num_classes),
         'VGG16': lambda num_classes: Classifier(VGG16(), num_classes),
 
         # SSDLite

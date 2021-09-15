@@ -28,7 +28,7 @@ class Conv2dAct(ModuleBase):
         return x
 
     def _set_activation(self, act):
-        assert act in ['relu', 'hswish', 'swish', 'relu6', 'none']
+        assert act in ['relu', 'hswish', 'swish', 'relu6', 'leaky_relu', 'none']
 
         if act == 'relu':
             self.activation = torch.nn.ReLU(inplace=True)
@@ -38,6 +38,8 @@ class Conv2dAct(ModuleBase):
             self.activation = Swish()
         elif act == 'relu6':
             self.activation = torch.nn.ReLU6(inplace=True)
+        elif act == 'leaky_relu':
+            self.activation = torch.nn.LeakyReLU(negative_slope=0.1)
         elif act == 'none':
             self.activation = None
 
