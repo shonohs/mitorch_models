@@ -8,8 +8,8 @@ class SSDLite(Model):
     class DetectionBlock(ModuleBase):
         def __init__(self, in_channels, num_outputs, num_classifiers):
             super().__init__()
-            self.conv_loc = DepthwiseSeparableConv2d(in_channels, num_outputs * 4, kernel_size=3, padding=1, use_bn2=False, activation2='none')
-            self.conv_cls = DepthwiseSeparableConv2d(in_channels, num_classifiers * num_outputs, kernel_size=3, padding=1, use_bn2=False, activation2='none')
+            self.conv_loc = DepthwiseSeparableConv2d(in_channels, num_outputs * 4, kernel_size=3, padding=1, use_bn=False, use_bn2=False, activation2='none')
+            self.conv_cls = DepthwiseSeparableConv2d(in_channels, num_classifiers * num_outputs, kernel_size=3, padding=1, use_bn=False, use_bn2=False, activation2='none')
 
         def forward(self, input):
             loc = self.conv_loc(input)
