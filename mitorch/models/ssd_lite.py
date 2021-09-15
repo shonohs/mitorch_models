@@ -41,7 +41,3 @@ class SSDLite(Model):
         features = self.base_model(input)
         assert len(features) == len(self.detection_blocks)
         return [b(features[i]) for i, b in enumerate(self.detection_blocks)]
-
-    def reset_parameters(self):
-        for b in self.detection_blocks:
-            b.reset_parameters()

@@ -1,3 +1,4 @@
+import collections
 import functools
 import torch
 
@@ -53,5 +54,12 @@ class Model(torch.nn.Module):
 
     def reset_parameters(self):
         for m in self.children():
-            if hasattr(m, 'reset_parameters'):
-                m.reset_parameters()
+            Model._call_reset_parameters(m)
+
+    @staticmethod
+    def _call_reset_parameters(m):
+        if hasattr(m, 'reset_parameters'):
+            m.reset_parameters()
+        elif isinstance(m, collections.abc.Iterable):
+            for c in m:
+                Model._call_reset_parameters(c)
