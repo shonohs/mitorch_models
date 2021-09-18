@@ -13,8 +13,12 @@ from .se_block import SEBlock
 from .shuffle import ChannelShuffle
 from .ssd_loss import SSDLoss, SSDSigmoidLoss
 from .ssd_predictor import SSDPredictor, SSDSigmoidPredictor
+from .yolo_loss import YoloLoss
+from .yolo_predictor import YoloPredictor
+
 
 __all__ = ['HardSwish', 'HardSigmoid', 'Add', 'ModuleBase',
            'Conv2dBN', 'Conv2dAct', 'Conv2d', 'DepthwiseSeparableConv2d',
            'FocalLoss', 'LinearAct', 'Linear', 'MBConv', 'PriorBox', 'RetinaPredictor', 'RetinaPriorBox', 'SEBlock',
-           'ChannelShuffle', 'SSDLoss', 'SSDSigmoidLoss', 'SSDPredictor', 'SSDSigmoidPredictor']
+           'ChannelShuffle', 'SSDLoss', 'SSDSigmoidLoss', 'SSDPredictor', 'SSDSigmoidPredictor',
+           'YoloLoss', 'YoloPredictor']
