@@ -53,15 +53,6 @@ class TestFocalLoss(unittest.TestCase):
         result = loss.loss_classification(pred_classification, target_classification)
         self.assertEqual(result, 0)
 
-    def test_ignore_all(self):
-        loss = FocalLoss(5, prior_box=None)
-        pred_classification = torch.zeros((5, 10, 5))
-        target_classification = torch.zeros((5, 10), dtype=torch.long)
-        target_classification[:] = -1
-
-        result = loss.loss_classification(pred_classification, target_classification)
-        self.assertEqual(result, 0)
-
     def test_one_hot(self):
         target = torch.tensor([0, 1, 2, 3])
         result = FocalLoss._get_one_hot(target, 3, torch.float, target.layout, target.device)

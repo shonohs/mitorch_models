@@ -8,7 +8,8 @@ class Head(Model):
 
     # The module names that have C3, C4, C5 features.
     # It's not ideal to have those model-specific information here. But I couldn't find a way to move those info into models without sacrificing their simplicity.
-    BASE_FEATURE_MAPS = {'EfficientNetB0': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},
+    BASE_FEATURE_MAPS = {'Darknet19': {5: 'features.conv17', 4: 'features.conv12', 3: 'features.conv7'},
+                         'EfficientNetB0': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},
                          'EfficientNetB1': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},
                          'EfficientNetB2': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},
                          'EfficientNetB3': {5: 'features.conv1', 4: 'features.block5_0.conv0', 3: 'features.block3_0.conv0'},
@@ -22,6 +23,7 @@ class Head(Model):
                          'SEResNext50': {5: 'features.block3_2', 4: 'features.block3_0.conv0', 3: 'features.block2_0.conv0'},
                          'SEResNext101': {5: 'features.block3_2', 4: 'features.block3_0.conv0', 3: 'features.block2_0.conv0'},
                          'ShuffleNetV2': {5: 'features.conv1', 4: 'features.block2_0.conv0', 3: 'features.block1_0.conv0'},
+                         'TinyDarknet': {5: 'features.conv6', 4: 'features.conv5', 3: 'features.conv4'},
                          'VGG16ForSSD': {5: 'features.conv5_1', 4: 'features.conv3_2', 3: 'features.conv2_2'}}
 
     def __init__(self, base_model, input_scales, output_channels):

@@ -67,7 +67,8 @@ For more details, please see mitorch framework.
 ## Object Detection
 
 * SSDLite
-* RetinaNet (in preview)
+* RetinaNet
+* YoloV2 (WIP)
 
 # Inference Benchmarks
 

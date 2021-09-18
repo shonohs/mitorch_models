@@ -12,7 +12,7 @@ from .shufflenetv2 import ShuffleNetV2
 from .squeezenet import SqueezeNet
 from .ssd_lite import SSDLite
 from .vgg import VGG_A, VGG_B, VGG_C, VGG_D, VGG_E, VGG16, VGG16ForSSD
-
+from .yolov2 import YoloV2
 from .factory import ModelFactory
 from .heads import BidirectionalFeaturePyramidNetwork, FeaturePyramidNetwork, FeaturePyramidNetworkLite, MnasFPN, SSDLiteExtraLayers
 
@@ -24,5 +24,5 @@ __all__ = ['Classifier',
            'RetinaNet', 'RetinaNetLite',
            'SEResNext14', 'SEResNext26', 'SEResNext50', 'SEResNext101',
            'ShuffleNet', 'ShuffleNetV2', 'SqueezeNet', 'SSDLite',
-           'VGG_A', 'VGG_B', 'VGG_C', 'VGG_D', 'VGG_E', 'VGG16', 'VGG16ForSSD', 'ModelFactory',
+           'VGG_A', 'VGG_B', 'VGG_C', 'VGG_D', 'VGG_E', 'VGG16', 'VGG16ForSSD', 'YoloV2', 'ModelFactory',
            'BidirectionalFeaturePyramidNetwork', 'FeaturePyramidNetwork', 'FeaturePyramidNetworkLite', 'MnasFPN', 'SSDLiteExtraLayers']

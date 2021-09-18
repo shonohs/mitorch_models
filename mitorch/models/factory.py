@@ -150,6 +150,10 @@ class ModelFactory:
         'EfficientDetD5': lambda num_classes: RetinaNet(BidirectionalFeaturePyramidNetwork(EfficientNetB5(), 288, 7), num_classes, num_blocks=4),
         'EfficientDetD6': lambda num_classes: RetinaNet(BidirectionalFeaturePyramidNetwork(EfficientNetB6(), 384, 8), num_classes, num_blocks=5),
         'EfficientDetD7': lambda num_classes: RetinaNet(BidirectionalFeaturePyramidNetwork(EfficientNetB6(), 384, 8), num_classes, num_blocks=5),
+
+        # Yolo
+        'YoloV2': lambda num_classes: YoloV2(YoloV2ExtraLayers(Darknet19()), num_classes),
+        'TinyYoloV2': lambda num_classes: YoloV2(TinyYoloV2ExtraLayers(TinyDarknet()), num_classes),
     }
 
     RECOMMENDED_INPUT_SIZES = {
