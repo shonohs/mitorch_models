@@ -34,7 +34,9 @@ class Model(torch.nn.Module):
                 hook.remove()
 
             assert all([o is not None for o in self._outputs])
-            return self._outputs
+            results = self._outputs
+            self._outputs = None
+            return results
 
     def _find_module_by_name(self, name):
         paths = name.split('.')
