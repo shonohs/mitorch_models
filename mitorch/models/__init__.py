@@ -1,4 +1,5 @@
 from .classifier import Classifier
+from .convmixer import ConvMixer, ConvMixer1536_20, ConvMixer768_32
 from .darknet import Darknet19, TinyDarknet
 from .efficientnet import EfficientNetB0, EfficientNetB1, EfficientNetB2, EfficientNetB3, EfficientNetB4, EfficientNetB5, EfficientNetB6, EfficientNetB7
 from .mobilenetv2 import MobileNetV2
@@ -17,6 +18,7 @@ from .factory import ModelFactory
 from .heads import BidirectionalFeaturePyramidNetwork, FeaturePyramidNetwork, FeaturePyramidNetworkLite, MnasFPN, SSDLiteExtraLayers
 
 __all__ = ['Classifier',
+           'ConvMixer', 'ConvMixer1536_20', 'ConvMixer768_32',
            'Darknet19', 'TinyDarknet',
            'EfficientNetB0', 'EfficientNetB1', 'EfficientNetB2', 'EfficientNetB3', 'EfficientNetB4', 'EfficientNetB5', 'EfficientNetB6', 'EfficientNetB7',
            'MobileNetV2', 'MobileNetV3', 'MobileNetV3Small',

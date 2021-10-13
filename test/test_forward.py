@@ -5,6 +5,9 @@ from mitorch.models import *
 
 
 class TestForward(unittest.TestCase):
+    def test_convmixer(self):
+        self._test_model(ConvMixer1536_20(), 224)
+
     def test_efficientnetb0(self):
         self._test_model(EfficientNetB0(), 224)
 

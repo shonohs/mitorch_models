@@ -4,6 +4,8 @@ from .heads import *
 
 class ModelFactory:
     PREDEFINED_MODELS = {
+        'ConvMixer-1536/20': lambda num_classes: Classifier(ConvMixer1536_20(), num_classes),
+        'ConvMixer-768/32': lambda num_classes: Classifier(ConvMixer768_32(), num_classes),
         'Darknet19': lambda num_classes: Classifier(Darknet19(), num_classes),
         'EfficientNetB0': lambda num_classes: Classifier(EfficientNetB0(), num_classes),
         'EfficientNetB1': lambda num_classes: Classifier(EfficientNetB1(), num_classes),
