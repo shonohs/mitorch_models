@@ -63,6 +63,7 @@ For more details, please see mitorch framework.
 * ResNext14, ResNext26, ResNext50, ResNext101
 * SEResNext14, SEResNext26, SEResNext50, SEResNext101
 * EfficientNetB0, EfficientNetB1, EfficientNetB2, EfficientNetB3, EfficientNetB4, EfficientNetB5, EfficientNetB6, EfficientNetB7
+* ConvMixer
 
 ## Object Detection
 
